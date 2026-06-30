@@ -1,0 +1,23 @@
+[
+    {
+        "key": "createdOn",
+        "path": "case:createdOn",
+        "displayType": {
+            "type": "date",
+            "displayTypeParameters": {}
+        },
+        "sortable": true,
+        "defaultSort": "DESC",
+        "order": 0
+    },
+    {
+        "key": "createdBy",
+        "path": "case:createdBy",
+        "displayType": {
+            "type": "text",
+            "displayTypeParameters": {}
+        },
+        "sortable": true,
+        "order": 1
+    }
+]

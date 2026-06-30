@@ -1,0 +1,24 @@
+[
+    {
+        "resourceType": "com.ritense.objectenapi.security.Object",
+        "actions": [
+            "create",
+            "modify",
+            "view",
+            "view_list",
+            "delete"
+        ],
+        "roleKey": "ROLE_ADMIN"
+    },
+    {
+        "resourceType": "com.ritense.objectenapi.security.Object",
+        "actions": [
+            "create",
+            "modify",
+            "view",
+            "view_list",
+            "delete"
+        ],
+        "roleKey": "ROLE_USER"
+    }
+]

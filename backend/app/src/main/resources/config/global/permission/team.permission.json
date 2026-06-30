@@ -1,0 +1,22 @@
+[
+    {
+        "resourceType": "com.ritense.team.domain.Team",
+        "actions": [
+            "view",
+            "view_list",
+            "create",
+            "modify",
+            "delete",
+            "assign"
+        ],
+        "roleKey": "ROLE_ADMIN"
+    },
+    {
+        "resourceType": "com.ritense.team.domain.Team",
+        "actions": [
+            "view",
+            "view_list"
+        ],
+        "roleKey": "ROLE_USER"
+    }
+]

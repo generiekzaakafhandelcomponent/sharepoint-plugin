@@ -1,0 +1,183 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "gzac-plugin-template": {
+            "root": "",
+            "sourceRoot": "src",
+            "projectType": "application",
+            "prefix": "app",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "style": "scss"
+                }
+            },
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "aot": false,
+                        "outputPath": "deployment/gzac-plugin-template",
+                        "index": "src/index.html",
+                        "main": "src/main.ts",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "src/tsconfig.app.json",
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "node_modules/@valtimo/layout/assets/img",
+                                "output": "./valtimo-layout/img/"
+                            },
+                            {
+                                "glob": "**/*",
+                                "input": "node_modules/@valtimo/shared/assets/core",
+                                "output": "./valtimo-translation/core/"
+                            },
+                            {
+                                "glob": "**/*",
+                                "input": "node_modules/monaco-editor",
+                                "output": "assets/monaco-editor"
+                            }
+                        ],
+                        "styles": [
+                            "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                            "node_modules/perfect-scrollbar/css/perfect-scrollbar.css",
+                            "node_modules/@mdi/font/css/materialdesignicons.css",
+                            "node_modules/@foxythemes/bootstrap-datetime-picker-bs4/css/bootstrap-datetimepicker.css",
+                            "node_modules/swagger-ui/dist/swagger-ui.css",
+                            "node_modules/dmn-js/dist/assets/diagram-js.css",
+                            "node_modules/dmn-js/dist/assets/dmn-js-decision-table.css",
+                            "node_modules/dmn-js/dist/assets/dmn-js-decision-table-controls.css",
+                            "node_modules/dmn-js/dist/assets/dmn-js-drd.css",
+                            "node_modules/dmn-js/dist/assets/dmn-js-literal-expression.css",
+                            "node_modules/dmn-js/dist/assets/dmn-js-shared.css",
+                            "node_modules/dmn-js/dist/assets/dmn-font/css/dmn.css",
+                            "node_modules/dmn-js/dist/assets/dmn-font/css/dmn-embedded.css",
+                            "node_modules/dmn-js/dist/assets/dmn-font/css/dmn-codes.css",
+                            "node_modules/bpmn-js/dist/assets/diagram-js.css",
+                            "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css",
+                            "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css",
+                            "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css",
+                            "node_modules/@bpmn-io/properties-panel/dist/assets/properties-panel.css",
+                            "node_modules/ol/ol.css",
+                            "node_modules/@valtimo/components/assets/css/ng-multiselect-dropdown.theme.scss",
+                            "node_modules/@valtimo/layout/assets/css/app.css",
+                            "src/styles.scss",
+                            "node_modules/flatpickr/dist/flatpickr.css",
+                            "node_modules/@valtimo/components/assets/css/carbon.scss",
+                            "node_modules/@valtimo/components/assets/css/color.scss",
+                            "node_modules/@valtimo/components/assets/css/compatibility.scss",
+                            "node_modules/@valtimo/components/assets/css/design-tokens.css",
+                            "node_modules/@valtimo/components/assets/css/formio-carbon.scss"
+                        ],
+                        "scripts": [
+                            "node_modules/jquery/dist/jquery.min.js",
+                            "node_modules/components-jqueryui/jquery-ui.min.js",
+                            "node_modules/popper.js/dist/umd/popper.js",
+                            "node_modules/bootstrap/dist/js/bootstrap.js",
+                            "node_modules/@foxythemes/bootstrap-datetime-picker-bs4/js/bootstrap-datetimepicker.min.js",
+                            "node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js",
+                            "node_modules/select2/dist/js/select2.min.js",
+                            "node_modules/@valtimo/layout/assets/js/app.js",
+                            "src/assets/bpmn/ValtimoBPMNModeler.js",
+                            "node_modules/@webcomponents/custom-elements/src/native-shim.js",
+                            "node_modules/dmn-js/dist/dmn-modeler.development.js"
+                        ],
+                        "allowedCommonJsDependencies": [
+                            "swagger-ui",
+                            "bpmn-js-properties-panel",
+                            "lodash",
+                            "hammerjs",
+                            "camunda-bpmn-moddle/lib",
+                            "object-refs",
+                            "heatmap.js-fixed"
+                        ],
+                        "vendorChunk": true,
+                        "extractLicenses": false,
+                        "buildOptimizer": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true
+                    },
+                    "defaultConfiguration": ""
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "buildTarget": "gzac-plugin-template:build"
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "buildTarget": "gzac-plugin-template:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "src/test.ts",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "src/tsconfig.spec.json",
+                        "karmaConfig": "src/karma.conf.js",
+                        "styles": [
+                            "src/styles.scss"
+                        ],
+                        "scripts": [],
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets"
+                        ]
+                    }
+                }
+            }
+        },
+        "@valtimo-plugins/sample-plugin": {
+            "projectType": "library",
+            "root": "projects/plugin",
+            "sourceRoot": "projects/plugin/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "options": {
+                        "tsConfig": "projects/plugin/tsconfig.lib.json",
+                        "project": "projects/plugin/ng-package.json"
+                    },
+                    "configurations": {
+                        "production": {
+                            "tsConfig": "projects/plugin/tsconfig.lib.prod.json"
+                        },
+                        "development": {
+                            "tsConfig": "projects/plugin/tsconfig.lib.json"
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/plugin/src/test.ts",
+                        "tsConfig": "projects/plugin/tsconfig.spec.json",
+                        "karmaConfig": "projects/plugin/karma.conf.js"
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "projects/plugin/src/**/*.ts",
+                            "projects/plugin/src/**/*.html"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "cli": {
+        "analytics": false
+    }
+}

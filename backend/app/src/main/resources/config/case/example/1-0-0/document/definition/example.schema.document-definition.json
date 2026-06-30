@@ -1,0 +1,20 @@
+{
+    "$id": "example.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Example",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name"
+        },
+        "apiResult": {
+            "type": "string",
+            "description": "Result from the sample plugin Time API call"
+        },
+        "message": {
+            "type": "string",
+            "description": "Message that was set in the plugin action"
+        }
+    }
+}

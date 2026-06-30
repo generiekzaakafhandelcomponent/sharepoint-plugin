@@ -1,0 +1,10 @@
+[
+    {
+        "id": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "title": "Sample plugin (Autodeployed)",
+        "pluginDefinitionKey": "sample-plugin",
+        "properties": {
+            "apiUrl": "https://timeapi.io/api/time/current/zone?timeZone=Europe/Amsterdam"
+        }
+    }
+]

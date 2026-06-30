@@ -1,0 +1,31 @@
+[
+    {
+        "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+        "actions": [
+            "view",
+            "view_list",
+            "create",
+            "modify",
+            "delete",
+            "claim",
+            "assign",
+            "assignable",
+            "export"
+        ],
+        "roleKey": "ROLE_ADMIN"
+    },
+    {
+        "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+        "actions": [
+            "view",
+            "view_list",
+            "create",
+            "modify",
+            "delete",
+            "claim",
+            "assign",
+            "assignable"
+        ],
+        "roleKey": "ROLE_USER"
+    }
+]

@@ -1,0 +1,18 @@
+[
+    {
+        "resourceType": "com.ritense.dashboard.domain.Dashboard",
+        "actions": [
+            "view",
+            "view_list"
+        ],
+        "roleKey": "ROLE_ADMIN"
+    },
+    {
+        "resourceType": "com.ritense.dashboard.domain.Dashboard",
+        "actions": [
+            "view",
+            "view_list"
+        ],
+        "roleKey": "ROLE_USER"
+    }
+]

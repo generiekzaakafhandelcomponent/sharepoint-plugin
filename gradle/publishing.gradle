@@ -1,0 +1,114 @@
+/*
+ * Copyright 2026 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+def sonatypeCentralStagingDir = "sonatypeCentralStaging"
+def signingConfigSet = false
+if (System.getenv('SIGNING_KEY') &&
+        System.getenv('SIGNING_KEY_PASSWORD')
+) {
+    signingConfigSet = true
+}
+
+if (signingConfigSet) {
+    apply plugin: 'signing'
+}
+
+if (System.getenv('SONATYPE_USR') &&
+        System.getenv('SONATYPE_PSW')
+) {
+    apply plugin: 'maven-publish'
+    apply plugin: 'cn.lalaki.central'
+}
+
+publishing {
+    repositories {
+        maven {
+            name "Sonatype"
+            url = sonatypeCentralStagingDir
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.ritense.valtimoplugins'
+
+            pom {
+                url = 'https://exchange.gzac.nl'
+                licenses {
+                    license {
+                        name = 'Licensed under EUPL, Version 1.2 (the "License");'
+                        url = 'https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12'
+                    }
+                }
+                scm {
+                    connection = "git@github.com:generiekzaakafhandelcomponent/gzac-plugin-template.git"
+                    developerConnection = "git@github.com:generiekzaakafhandelcomponent/gzac-plugin-template.git"
+                    url = "https://github.com/generiekzaakafhandelcomponent/gzac-plugin-template"
+                }
+            }
+
+            if (components.hasProperty("javaPlatform")) {
+                from components.javaPlatform
+            } else {
+                from components.java
+            }
+        }
+    }
+}
+
+centralPortalPlus {
+    url = uri(sonatypeCentralStagingDir)
+    username = System.getenv('SONATYPE_USR')
+    password = System.getenv('SONATYPE_PSW')
+}
+
+if (signingConfigSet) {
+    signing {
+        def signingKeyBase64 = System.getenv("SIGNING_KEY")
+        def signingKeyBytes = signingKeyBase64.decodeBase64()
+        def signingKey = new String(signingKeyBytes, "UTF-8")
+        def signingKeyPassword = System.getenv('SIGNING_KEY_PASSWORD')
+
+        useInMemoryPgpKeys(signingKey, signingKeyPassword)
+        sign configurations.archives
+        sign publishing.publications.maven
+    }
+}
+
+
+def filterVersionLine(bufferedReader) {
+    def line
+    def versionLine
+    while ((line = bufferedReader.readLine()) != null) {
+        if ((line.startsWith('version') && !line.startsWith('version.')) || line.startsWith('projectVersion') || line.startsWith('version.semver')) {
+            versionLine = line.split('=')
+        }
+    }
+    return versionLine
+}
+
+def parseProjectVersion(filePath) {
+    def fileString = new File(filePath).getText('UTF-8')
+    def bufferedReader = new BufferedReader(new StringReader(fileString))
+    def versionLine = filterVersionLine(bufferedReader)
+
+    // strip off -SNAPSHOT postfixes
+    def projectVersion = versionLine[1]
+    projectVersion = projectVersion.trim()
+    if (projectVersion.contains('-')) {
+        projectVersion = projectVersion.split('-')[0]
+    }
+    return projectVersion
+}

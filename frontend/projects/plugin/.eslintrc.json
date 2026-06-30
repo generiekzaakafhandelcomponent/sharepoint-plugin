@@ -1,0 +1,31 @@
+{
+    "extends": "../../.eslintrc.json",
+    "ignorePatterns": ["!**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "rules": {
+                "@angular-eslint/component-selector": [
+                    "warn",
+                    {
+                        "type": "element",
+                        "prefix": "valtimo",
+                        "style": "kebab-case"
+                    }
+                ],
+                "@angular-eslint/directive-selector": [
+                    "warn",
+                    {
+                        "type": "directive",
+                        "prefix": "valtimo",
+                        "style": "camelCase"
+                    }
+                ]
+            }
+        },
+        {
+            "files": ["*.html"],
+            "rules": {}
+        }
+    ]
+}

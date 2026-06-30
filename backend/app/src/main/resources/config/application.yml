@@ -1,0 +1,143 @@
+spring:
+  application:
+    name: gzac-plugin-template
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+    time-zone: UTC
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:54320/plugin
+    username: plugin
+    password: password
+    hikari:
+      auto-commit: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8081/auth/realms/valtimo/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloakjwt:
+            issuer-uri: http://localhost:8081/auth/realms/valtimo
+          keycloakapi:
+            issuer-uri: http://localhost:8081/auth/realms/valtimo
+        registration:
+          keycloakjwt:
+            client-id: valtimo-console
+          keycloakapi:
+            client-id: valtimo-user-m2m-client
+            client-secret: 6ef6ca16-6b86-482a-a3d9-0561704c1db9
+            authorization-grant-type: authorization_code
+            scope: openid
+  liquibase:
+    enabled: false
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+    show_sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        hbm2ddl.auto: none
+        generate_statistics: false
+        naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+          region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+        connection:
+          provider_disables_autocommit: true
+    hibernate:
+      ddl-auto: none
+  main:
+    allow-bean-definition-overriding: true
+
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
+    min-response-size: 1024
+
+valtimo:
+  database: postgres
+  app:
+    scheme: http
+  oauth:
+    tokenValidityInSeconds: 3600 # Token is valid 1 hour
+  hardening:
+    removeStacktracesFromReturnedExceptions: true
+    allowStacktraceOnIps:
+      - 127.0.0.1
+  security:
+    whitelist:
+      hosts:
+        - localhost
+  plugin:
+    encryption-secret: "abcdefghijklmnop"
+  docker:
+    filter:
+      enabled: true
+      ports:
+        - 8080
+        - 8001
+        - 8002
+        - 8003
+        - 8006
+        - 8010
+        - 8011
+  changelog:
+    pbac:
+      clear-tables: false
+    case-tabs:
+      clear-tables: false
+    case-widget-tab:
+      clear-tables: false
+  web:
+    cors:
+      corsConfiguration:
+        allowedOrigins:
+          - "*"
+        allowedMethods:
+          - "*"
+        allowedHeaders:
+          - "*"
+      paths:
+        - "/**"
+  genericTemplateName: "template-name"
+  annotation-scan:
+    accepted-packages:
+      - com.ritense
+  includeDocumentContentInResponse: true
+
+spring-actuator:
+  username: admin
+  password: password
+
+audit:
+  record:
+    retention: 365 # days
+
+operaton:
+  bpm:
+    history-level: AUDIT
+    history-level-default: AUDIT
+    admin-user:
+      id: Admin
+      password: admin
+      first-name: Admin account
+    generic-properties:
+      properties:
+        deploy-changed-only: true
+        enforceHistoryTimeToLive: false
+
+implementation:
+  suwinet:
+    maxAgeKindAlsThuiswonend: 100

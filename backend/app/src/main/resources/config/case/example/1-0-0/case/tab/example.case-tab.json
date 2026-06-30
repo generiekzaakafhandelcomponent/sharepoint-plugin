@@ -1,0 +1,20 @@
+[
+    {
+        "key": "summary",
+        "name": "Summary",
+        "type": "widgets",
+        "contentKey": "-"
+    },
+    {
+        "name": "Progress",
+        "key": "progress",
+        "type": "standard",
+        "contentKey": "progress"
+    },
+    {
+        "name": "Audit",
+        "key": "audit",
+        "type": "standard",
+        "contentKey": "audit"
+    }
+]

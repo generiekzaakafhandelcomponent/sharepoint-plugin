@@ -1,0 +1,18 @@
+[
+    {
+        "resourceType": "com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot",
+        "actions": [
+            "view",
+            "view_list"
+        ],
+        "roleKey": "ROLE_ADMIN"
+    },
+    {
+        "resourceType": "com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot",
+        "actions": [
+            "view",
+            "view_list"
+        ],
+        "roleKey": "ROLE_USER"
+    }
+]

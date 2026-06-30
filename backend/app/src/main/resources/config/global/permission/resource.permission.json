@@ -1,0 +1,24 @@
+[
+    {
+        "resourceType": "com.ritense.resource.authorization.ResourcePermission",
+        "actions": [
+            "view_list",
+            "view",
+            "create",
+            "modify",
+            "delete"
+        ],
+        "roleKey": "ROLE_ADMIN"
+    },
+    {
+        "resourceType": "com.ritense.resource.authorization.ResourcePermission",
+        "actions": [
+            "view_list",
+            "view",
+            "create",
+            "modify",
+            "delete"
+        ],
+        "roleKey": "ROLE_USER"
+    }
+]

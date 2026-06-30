@@ -1,0 +1,48 @@
+/*
+ * Copyright 2026 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.ritense.plugin.sandbox
+
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import java.net.InetAddress
+
+@SpringBootApplication
+class PluginApplication {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val app = runApplication<PluginApplication>(*args)
+
+            logger.info {
+                """
+
+                ----------------------------------------------------------
+                |    Application '${app.environment.getProperty("spring.application.name")}' is running!
+                |    Active profile(s): [${app.environment.getProperty("spring.profiles.active")}].
+                |    Local URL: [http://127.0.0.1:${app.environment.getProperty("server.port")}].
+                |    External URL: [http://${InetAddress.getLocalHost().hostAddress}:${app.environment.getProperty(
+                    "server.port",
+                )}]
+                ----------------------------------------------------------
+                """.trimIndent()
+            }
+        }
+    }
+}
