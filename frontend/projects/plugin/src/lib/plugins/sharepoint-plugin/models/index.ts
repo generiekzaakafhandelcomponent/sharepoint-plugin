@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimoplugins.sharepoint.autoconfiguration
-
-import org.springframework.boot.context.properties.ConfigurationProperties
-
-@ConfigurationProperties(prefix = "valtimo.sharepoint.azure")
-data class MicrosoftGraphProperties(
-    val tenantId: String,
-    val clientId: String,
-    val clientSecret: String,
-)
+export * from "./config";

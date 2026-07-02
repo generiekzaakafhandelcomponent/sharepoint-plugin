@@ -16,12 +16,15 @@
 
 package com.ritense.valtimoplugins.sharepoint.plugin
 
+import com.azure.identity.ClientSecretCredentialBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.microsoft.graph.serviceclient.GraphServiceClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
@@ -37,6 +40,15 @@ open class SharePointPlugin(
     private val sharePointService: SharePointService,
     private val objectMapper: ObjectMapper,
 ) {
+    @PluginProperty(key = "tenantId", secret = false)
+    lateinit var tenantId: String
+
+    @PluginProperty(key = "clientId", secret = false)
+    lateinit var clientId: String
+
+    @PluginProperty(key = "clientSecret", secret = true)
+    lateinit var clientSecret: String
+
     @PluginProperty(key = "sharePointSiteId", secret = false)
     lateinit var sharePointSiteId: String
 
@@ -45,6 +57,15 @@ open class SharePointPlugin(
 
     @PluginProperty(key = "baseFolderPath", secret = false)
     lateinit var baseFolderPath: String
+
+    val microsoftGraphClient: MicrosoftGraphClient by lazy {
+        val credential = ClientSecretCredentialBuilder()
+            .tenantId(tenantId)
+            .clientId(clientId)
+            .clientSecret(clientSecret)
+            .build()
+        MicrosoftGraphClient(GraphServiceClient(credential, "https://graph.microsoft.com/.default"))
+    }
 
     @PluginAction(
         key = "create-zaak-folder",
@@ -67,7 +88,7 @@ open class SharePointPlugin(
 
         logger.info { "Creating SharePoint folder for zaak: $baseFolderPath/$zaaktype/$year/$zaaknummer" }
         sharePointService.createZaakFolder(
-            siteId = sharePointSiteId,
+            graphClient = microsoftGraphClient,
             driveId = driveId,
             baseFolderPath = baseFolderPath,
             zaaktype = zaaktype,
@@ -98,7 +119,7 @@ open class SharePointPlugin(
 
         logger.info { "Listing SharePoint work documents for zaak: $baseFolderPath/$zaaktype/$year/$zaaknummer" }
         val documents = sharePointService.listWorkDocuments(
-            siteId = sharePointSiteId,
+            graphClient = microsoftGraphClient,
             driveId = driveId,
             baseFolderPath = baseFolderPath,
             zaaktype = zaaktype,

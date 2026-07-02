@@ -23,11 +23,9 @@ import org.springframework.stereotype.Service
 
 @SkipComponentScan
 @Service
-class SharePointService(
-    private val graphClient: MicrosoftGraphClient,
-) {
+class SharePointService {
     fun listWorkDocuments(
-        siteId: String,
+        graphClient: MicrosoftGraphClient,
         driveId: String,
         baseFolderPath: String,
         zaaktype: String,
@@ -35,7 +33,7 @@ class SharePointService(
         zaaknummer: String,
     ): List<WorkDocument> {
         val folderPath = buildFolderPath(baseFolderPath, zaaktype, year, zaaknummer)
-        return graphClient.listDriveItems(siteId, driveId, folderPath)
+        return graphClient.listDriveItems(driveId, folderPath)
             .filter { it.file != null }
             .map { item ->
                 WorkDocument(
@@ -50,7 +48,7 @@ class SharePointService(
     }
 
     fun createZaakFolder(
-        siteId: String,
+        graphClient: MicrosoftGraphClient,
         driveId: String,
         baseFolderPath: String,
         zaaktype: String,
@@ -58,7 +56,7 @@ class SharePointService(
         zaaknummer: String,
     ) {
         val parentPath = buildFolderPath(baseFolderPath, zaaktype, year)
-        graphClient.createFolder(siteId, driveId, parentPath, zaaknummer)
+        graphClient.createFolder(driveId, parentPath, zaaknummer)
     }
 
     private fun buildFolderPath(vararg parts: String): String =

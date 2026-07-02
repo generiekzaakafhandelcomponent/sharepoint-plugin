@@ -16,42 +16,20 @@
 
 package com.ritense.valtimoplugins.sharepoint.autoconfiguration
 
-import com.azure.identity.ClientSecretCredentialBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.microsoft.graph.serviceclient.GraphServiceClient
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPluginFactory
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.valtimoplugins.sharepoint.web.SharePointResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
-@EnableConfigurationProperties(MicrosoftGraphProperties::class)
 class SharePointAutoConfiguration {
     @Bean
-    @ConditionalOnMissingBean(GraphServiceClient::class)
-    fun graphServiceClient(properties: MicrosoftGraphProperties): GraphServiceClient {
-        val credential = ClientSecretCredentialBuilder()
-            .tenantId(properties.tenantId)
-            .clientId(properties.clientId)
-            .clientSecret(properties.clientSecret)
-            .build()
-        return GraphServiceClient(credential, "https://graph.microsoft.com/.default")
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(MicrosoftGraphClient::class)
-    fun microsoftGraphClient(graphServiceClient: GraphServiceClient): MicrosoftGraphClient =
-        MicrosoftGraphClient(graphServiceClient)
-
-    @Bean
     @ConditionalOnMissingBean(SharePointService::class)
-    fun sharePointService(graphClient: MicrosoftGraphClient): SharePointService =
-        SharePointService(graphClient)
+    fun sharePointService(): SharePointService = SharePointService()
 
     @Bean
     @ConditionalOnMissingBean(SharePointPluginFactory::class)

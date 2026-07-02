@@ -20,14 +20,10 @@ import com.microsoft.graph.models.DriveItem
 import com.microsoft.graph.models.Folder
 import com.microsoft.graph.models.odataerrors.ODataError
 import com.microsoft.graph.serviceclient.GraphServiceClient
-import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.stereotype.Component
 
 private val logger = KotlinLogging.logger {}
 
-@SkipComponentScan
-@Component
 class MicrosoftGraphClient(
     val graphServiceClient: GraphServiceClient,
 ) {

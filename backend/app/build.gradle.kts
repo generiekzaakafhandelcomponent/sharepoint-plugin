@@ -29,7 +29,7 @@ apply(from = "../../gradle/environment.gradle.kts")
 val configureEnvironment = extra["configureEnvironment"] as (task: ProcessForkOptions) -> Unit
 
 dockerCompose {
-    setProjectName("gzac-docker-compose")
+    setProjectName("sharepoint-plugin")
     composeAdditionalArgs.addAll("--profile", "zgw")
     // composeAdditionalArgs = ["--profile", "zgw", "--profile", "openformulieren", "--profile", "openklant"]
     stopContainers = false
@@ -38,7 +38,7 @@ dockerCompose {
 }
 
 tasks.bootRun {
-    dependsOn("composeUp")
+  //  dependsOn("composeUp")
     systemProperty("spring.profiles.include", "dev")
     val t = this
     doFirst {

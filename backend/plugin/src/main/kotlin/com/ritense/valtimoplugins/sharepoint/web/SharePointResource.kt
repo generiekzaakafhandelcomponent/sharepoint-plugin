@@ -52,7 +52,7 @@ class SharePointResource(
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Plugin configuration not found: $pluginConfigurationId")
 
         val documents = sharePointService.listWorkDocuments(
-            siteId = plugin.sharePointSiteId,
+            graphClient = plugin.microsoftGraphClient,
             driveId = plugin.driveId,
             baseFolderPath = plugin.baseFolderPath,
             zaaktype = zaaktype,
