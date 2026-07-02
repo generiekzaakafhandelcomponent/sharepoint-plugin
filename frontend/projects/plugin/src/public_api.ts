@@ -15,11 +15,12 @@
  */
 
 /*
- * Public API Surface of sample-plugin
+ * Public API Surface of sharepoint-plugin
  */
 
-export * from "./lib/plugins/sample-plugin/models";
-export * from "./lib/plugins/sample-plugin/sample-plugin-module";
-export * from "./lib/plugins/sample-plugin/sample-plugin.specification";
-export * from "./lib/plugins/sample-plugin/components/sample-plugin-configuration/sample-plugin-configuration.component";
-export * from "./lib/plugins/sample-plugin/components/sample-action-configuration/sample-action-configuration.component";
+export * from "./lib/plugins/sharepoint-plugin/models";
+export * from "./lib/plugins/sharepoint-plugin/sharepoint-plugin-module";
+export * from "./lib/plugins/sharepoint-plugin/sharepoint-plugin.specification";
+export * from "./lib/plugins/sharepoint-plugin/components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
+export * from "./lib/plugins/sharepoint-plugin/components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
+export * from "./lib/plugins/sharepoint-plugin/components/list-work-documents-configuration/list-work-documents-configuration.component";

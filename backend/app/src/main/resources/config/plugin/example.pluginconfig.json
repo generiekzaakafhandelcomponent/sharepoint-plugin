@@ -1,10 +1,15 @@
 [
     {
         "id": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
-        "title": "Sample plugin (Autodeployed)",
-        "pluginDefinitionKey": "sample-plugin",
+        "title": "SharePoint plugin (Autodeployed)",
+        "pluginDefinitionKey": "sharepoint-plugin",
         "properties": {
-            "apiUrl": "https://timeapi.io/api/time/current/zone?timeZone=Europe/Amsterdam"
+            "tenantId": "your-tenant-id",
+            "clientId": "your-client-id",
+            "clientSecret": "your-client-secret",
+            "sharePointSiteId": "your-sharepoint-site-id",
+            "driveId": "your-drive-id",
+            "baseFolderPath": "Werkdocumenten"
         }
     }
 ]

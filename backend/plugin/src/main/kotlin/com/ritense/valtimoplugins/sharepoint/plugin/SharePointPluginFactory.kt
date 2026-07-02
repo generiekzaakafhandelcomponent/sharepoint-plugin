@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimoplugins.sampleplugin.client
+package com.ritense.valtimoplugins.sharepoint.plugin
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
-import org.springframework.stereotype.Service
+import com.ritense.valtimoplugins.sharepoint.service.SharePointService
+import org.springframework.stereotype.Component
 
 @SkipComponentScan
-@Service
-class SampleService(
-    private val sampleClient: SampleClient,
-) {
-    fun printAPIResults(apiUrl: String): String {
-        val apiResponse = sampleClient.fetchTimeAPI(apiUrl)
-
-        if (apiResponse.error != null) {
-            return "Failed: ${apiResponse.error}"
-        }
-
-        val tz = apiResponse.result?.body
-        return "Timezone: ${tz?.timeZone}, DateTime: ${tz?.dateTime}, " +
-            "DayOfWeek: ${tz?.dayOfWeek}, HTTP Status: ${apiResponse.responseStatus}"
-    }
+@Component
+class SharePointPluginFactory(
+    pluginService: PluginService,
+    private val sharePointService: SharePointService,
+    private val objectMapper: ObjectMapper,
+) : PluginFactory<SharePointPlugin>(pluginService) {
+    override fun create(): SharePointPlugin = SharePointPlugin(sharePointService, objectMapper)
 }

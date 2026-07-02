@@ -29,7 +29,7 @@
             "@src/*": [
                 "src/*"
             ],
-            "@valtimo-plugins/sample-plugin": [
+            "@valtimo-plugins/sharepoint-plugin": [
                 "projects/plugin/src/public_api.ts"
             ]
         }

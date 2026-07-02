@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export * from "./config";
+package com.ritense.valtimoplugins.sharepoint.service.model
+
+data class WorkDocument(
+    val id: String,
+    val name: String,
+    val webUrl: String,
+    val size: Long?,
+    val lastModifiedDateTime: String?,
+    val createdDateTime: String?,
+)

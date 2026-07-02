@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-const SAMPLE_PLUGIN_LOGO_BASE64 =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA1MGIyIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDJMMyA3djEwbDkgNSA5LTVWN2wtOS01eiIvPjxwYXRoIGQ9Ik0xMiAyMlYxMiIvPjxwYXRoIGQ9Ik0yMSA3bC05IDUiLz48cGF0aCBkPSJNMyA3bDkgNSIvPjwvc3ZnPg==";
+package com.ritense.valtimoplugins.sharepoint.autoconfiguration
 
-export {SAMPLE_PLUGIN_LOGO_BASE64};
+import org.springframework.boot.context.properties.ConfigurationProperties
+
+@ConfigurationProperties(prefix = "valtimo.sharepoint.azure")
+data class MicrosoftGraphProperties(
+    val tenantId: String,
+    val clientId: String,
+    val clientSecret: String,
+)

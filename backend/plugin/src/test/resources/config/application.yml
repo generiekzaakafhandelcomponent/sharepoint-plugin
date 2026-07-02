@@ -3,7 +3,7 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:54342/sample-plugin-test
+    url: jdbc:postgresql://localhost:54342/sharepoint-plugin-test
     username: test-user
     password: password
     driver-class-name: org.postgresql.Driver

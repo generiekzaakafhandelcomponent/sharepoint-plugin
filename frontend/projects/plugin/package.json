@@ -1,10 +1,10 @@
 {
-    "name": "@valtimo-plugins/sample-plugin",
+    "name": "@valtimo-plugins/sharepoint-plugin",
     "license": "EUPL-1.2",
     "version": "0.0.1",
     "scripts": {
-        "build": "ng build @valtimo-plugins/sample-plugin",
-        "watch": "ng build @valtimo-plugins/sample-plugin --watch"
+        "build": "ng build @valtimo-plugins/sharepoint-plugin",
+        "watch": "ng build @valtimo-plugins/sharepoint-plugin --watch"
     },
     "peerDependencies": {
         "@angular/common": "19.2.20",
