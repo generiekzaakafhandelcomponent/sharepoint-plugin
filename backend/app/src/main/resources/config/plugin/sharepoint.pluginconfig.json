@@ -7,8 +7,8 @@
             "tenantId": "your-tenant-id",
             "clientId": "your-client-id",
             "clientSecret": "your-client-secret",
-            "sharePointSiteId": "your-sharepoint-site-id",
-            "driveId": "your-drive-id",
+            "hostname": "ritense.sharepoint.com",
+            "sharePointSiteName": "your-sharepoint-site-id",
             "baseFolderPath": "Werkdocumenten"
         }
     }

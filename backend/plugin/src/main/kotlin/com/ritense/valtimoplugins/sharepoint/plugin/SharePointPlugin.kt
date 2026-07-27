@@ -22,7 +22,9 @@ import com.microsoft.graph.serviceclient.GraphServiceClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.EventType
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
@@ -49,10 +51,12 @@ open class SharePointPlugin(
     @PluginProperty(key = "clientSecret", secret = true)
     lateinit var clientSecret: String
 
-    @PluginProperty(key = "sharePointSiteId", secret = false)
-    lateinit var sharePointSiteId: String
+    @PluginProperty(key = "hostname", secret = false)
+    lateinit var hostname: String
 
-    @PluginProperty(key = "driveId", secret = false)
+    @PluginProperty(key = "sharePointSiteName", secret = false)
+    lateinit var sharePointSiteName: String
+
     lateinit var driveId: String
 
     @PluginProperty(key = "baseFolderPath", secret = false)
@@ -65,6 +69,16 @@ open class SharePointPlugin(
             .clientSecret(clientSecret)
             .build()
         MicrosoftGraphClient(GraphServiceClient(credential, "https://graph.microsoft.com/.default"))
+    }
+
+    @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
+    fun getConfigProps() {
+        try {
+            val siteId = microsoftGraphClient.getSiteId(hostname, sharePointSiteName)
+            driveId = microsoftGraphClient.getDriveIdByName(siteId, driveId)
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to resolve SharePoint site/drive configuration for $hostname/sites/$sharePointSiteName" }
+        }
     }
 
     @PluginAction(

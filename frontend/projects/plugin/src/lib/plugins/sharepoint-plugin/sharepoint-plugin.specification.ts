@@ -36,8 +36,8 @@ const sharepointPluginSpecification: PluginSpecification = {
       tenantId: "Tenant ID",
       clientId: "Client ID",
       clientSecret: "Client Secret",
-      sharePointSiteId: "SharePoint Site ID",
-      driveId: "Drive ID",
+      hostname: "Hostname",
+      sharePointSiteName: "SharePoint Site Name",
       baseFolderPath: "Basismap",
       "create-zaak-folder": "Maak zaakmap aan in SharePoint",
       createZaakFolderDescription:
@@ -57,8 +57,8 @@ const sharepointPluginSpecification: PluginSpecification = {
       tenantId: "Tenant ID",
       clientId: "Client ID",
       clientSecret: "Client Secret",
-      sharePointSiteId: "SharePoint Site ID",
-      driveId: "Drive ID",
+      hostname: "Hostname",
+      sharePointSiteName: "SharePoint Site Name",
       baseFolderPath: "Base Folder Path",
       "create-zaak-folder": "Create case folder in SharePoint",
       createZaakFolderDescription:

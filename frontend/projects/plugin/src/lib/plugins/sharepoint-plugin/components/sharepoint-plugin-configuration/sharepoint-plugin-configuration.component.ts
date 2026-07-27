@@ -58,7 +58,8 @@ export class SharePointPluginConfigurationComponent
       formValue.tenantId &&
       formValue.clientId &&
       formValue.clientSecret &&
-      formValue.sharePointSiteId &&
+      formValue.hostname &&
+      formValue.sharePointSiteName &&
       formValue.driveId &&
       formValue.baseFolderPath
     );

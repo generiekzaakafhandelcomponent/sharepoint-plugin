@@ -60,20 +60,21 @@
     type="password"
   ></v-input>
   <v-input
-    name="sharePointSiteId"
-    [title]="'sharePointSiteId' | pluginTranslate: pluginId | async"
+    name="hostname"
+    [title]="'hostname' | pluginTranslate: pluginId | async"
     [margin]="true"
     [disabled]="obs.disabled"
-    [defaultValue]="obs.prefill?.sharePointSiteId"
+    [defaultValue]="obs.prefill?.hostname"
     [required]="true"
     [widthPx]="350"
+    placeholder="ritense.sharepoint.com"
   ></v-input>
   <v-input
-    name="driveId"
-    [title]="'driveId' | pluginTranslate: pluginId | async"
+    name="sharePointSiteName"
+    [title]="'sharePointSiteName' | pluginTranslate: pluginId | async"
     [margin]="true"
     [disabled]="obs.disabled"
-    [defaultValue]="obs.prefill?.driveId"
+    [defaultValue]="obs.prefill?.sharePointSiteName"
     [required]="true"
     [widthPx]="350"
   ></v-input>

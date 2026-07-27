@@ -20,8 +20,8 @@ interface SharePointPluginConfig extends PluginConfigurationData {
   tenantId: string;
   clientId: string;
   clientSecret: string;
-  sharePointSiteId: string;
-  driveId: string;
+  hostname: string;
+  sharePointSiteName: string;
   baseFolderPath: string;
 }
 

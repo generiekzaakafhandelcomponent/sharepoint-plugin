@@ -50,6 +50,26 @@ class MicrosoftGraphClient(
         }
     }
 
+    fun getSiteId(hostname: String, sitePath: String): String =
+        requireNotNull(
+            graphServiceClient
+                .sites()
+                .bySiteId("$hostname:/sites/$sitePath")
+                .get()
+                ?.id
+        ) { "Site not found: $hostname/sites/$sitePath" }
+
+    fun getDriveIdByName(siteId: String, driveName: String): String {
+        val drive = graphServiceClient
+            .sites()
+            .bySiteId(siteId)
+            .drives()
+            .get()
+            ?.value
+            ?.firstOrNull { it.name.equals(driveName, ignoreCase = true) }
+        return requireNotNull(drive?.id) { "Drive '$driveName' not found in site $siteId" }
+    }
+
     fun createFolder(
         driveId: String,
         parentPath: String,
@@ -58,18 +78,27 @@ class MicrosoftGraphClient(
         val newFolder = DriveItem().apply {
             name = folderName
             folder = Folder()
-            additionalData = mutableMapOf("@microsoft.graph.conflictBehavior" to "rename")
+            additionalData = mutableMapOf("@microsoft.graph.conflictBehavior" to "fail")
         }
 
-        val parentItemId = if (parentPath.isBlank()) {
-            "root"
-        } else {
-            "root:/${parentPath.trim('/')}:"
-        }
+        val parentItemId = if (parentPath.isBlank()) "root" else "root:/${parentPath.trim('/')}:"
 
-        return graphServiceClient
-            .drives().byDriveId(driveId)
-            .items().byDriveItemId(parentItemId)
-            .children().post(newFolder)
+        return try {
+            graphServiceClient
+                .drives().byDriveId(driveId)
+                .items().byDriveItemId(parentItemId)
+                .children().post(newFolder)
+        } catch (e: ODataError) {
+            if (e.responseStatusCode == 409) {
+                // Folder already exists — fetch and return the existing one
+                val folderPath = if (parentPath.isBlank()) folderName else "${parentPath.trim('/')}/$folderName"
+                graphServiceClient
+                    .drives().byDriveId(driveId)
+                    .items().byDriveItemId("root:/${folderPath}:")
+                    .get()
+            } else {
+                throw e
+            }
+        }
     }
 }
