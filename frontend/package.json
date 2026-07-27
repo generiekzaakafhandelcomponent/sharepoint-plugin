@@ -31,6 +31,7 @@
         "@angular/platform-browser": "19.2.20",
         "@angular/platform-browser-dynamic": "19.2.20",
         "@angular/router": "19.2.20",
+        "@bpmn-io/cm-theme": "0.2.2",
         "@bpmn-io/dmn-migrate": "0.5.0",
         "@bpmn-io/properties-panel": "3.26.4",
         "@carbon/charts-angular": "1.23.6",
@@ -103,7 +104,7 @@
         "d3-shape": "3.2.0",
         "deepmerge-ts": "7.1.5",
         "diagram-js": "15.3.0",
-        "dmn-js": "17.2.0",
+        "dmn-js": "17.8.1",
         "dropzone": "6.0.0-beta.2",
         "flatpickr": "4.6.13",
         "hammerjs": "2.0.8",
@@ -185,6 +186,9 @@
         "webpack-bundle-analyzer": "4.10.2"
     },
     "overrides": {
+        "feelers": {
+            "@bpmn-io/cm-theme": "0.1.0-alpha.2"
+        },
         "@ng-bootstrap/ng-bootstrap": {
             "@angular/common": "$@angular/common",
             "@angular/core": "$@angular/core",
