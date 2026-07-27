@@ -57,10 +57,10 @@ open class SharePointPlugin(
     @PluginProperty(key = "sharePointSiteName", secret = false)
     lateinit var sharePointSiteName: String
 
-    lateinit var driveId: String
-
     @PluginProperty(key = "baseFolderPath", secret = false)
     lateinit var baseFolderPath: String
+
+    var driveId: String = "init"
 
     val microsoftGraphClient: MicrosoftGraphClient by lazy {
         val credential = ClientSecretCredentialBuilder()

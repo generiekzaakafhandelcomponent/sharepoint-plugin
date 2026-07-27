@@ -60,7 +60,6 @@ export class SharePointPluginConfigurationComponent
       formValue.clientSecret &&
       formValue.hostname &&
       formValue.sharePointSiteName &&
-      formValue.driveId &&
       formValue.baseFolderPath
     );
     this.valid$.next(valid);
