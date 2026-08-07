@@ -78,7 +78,7 @@ open class SharePointPlugin(
     fun getConfigProps() {
         try {
             val siteId = microsoftGraphClient.getSiteId(hostname, sharePointSiteName)
-            driveId = microsoftGraphClient.getDriveIdByName(siteId, driveId)
+            driveId = microsoftGraphClient.getDriveIdByName(siteId, baseFolderPath)
         } catch (e: Exception) {
             logger.error(e) { "Failed to resolve SharePoint site/drive configuration for $hostname/sites/$sharePointSiteName" }
         }
