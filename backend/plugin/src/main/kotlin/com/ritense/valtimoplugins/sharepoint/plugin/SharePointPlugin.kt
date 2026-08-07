@@ -63,6 +63,9 @@ open class SharePointPlugin(
     var driveId: String = "init"
 
     val microsoftGraphClient: MicrosoftGraphClient by lazy {
+        logger.debug {
+            "Initializing GraphClient with tenantId=$tenantId, clientId=$clientId, hostname=$hostname, siteName=$sharePointSiteName"
+        }
         val credential = ClientSecretCredentialBuilder()
             .tenantId(tenantId)
             .clientId(clientId)
@@ -93,12 +96,9 @@ open class SharePointPlugin(
         @PluginActionProperty yearVariable: String,
         @PluginActionProperty zaaknummerVariable: String,
     ) {
-        val zaaktype = execution.getVariable(zaaktypeVariable)?.toString()
-            ?: error("Procesvariabele '$zaaktypeVariable' niet gevonden in executie ${execution.id}")
-        val year = execution.getVariable(yearVariable)?.toString()
-            ?: error("Procesvariabele '$yearVariable' niet gevonden in executie ${execution.id}")
-        val zaaknummer = execution.getVariable(zaaknummerVariable)?.toString()
-            ?: error("Procesvariabele '$zaaknummerVariable' niet gevonden in executie ${execution.id}")
+        val zaaktype = zaaktypeVariable
+        val year = yearVariable
+        val zaaknummer = zaaknummerVariable
 
         logger.info { "Creating SharePoint folder for zaak: $baseFolderPath/$zaaktype/$year/$zaaknummer" }
         sharePointService.createZaakFolder(

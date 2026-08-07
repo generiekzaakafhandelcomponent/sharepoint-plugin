@@ -4,12 +4,12 @@
         "title": "SharePoint plugin (Autodeployed)",
         "pluginDefinitionKey": "sharepoint-plugin",
         "properties": {
-            "tenantId": "your-tenant-id",
-            "clientId": "your-client-id",
-            "clientSecret": "your-client-secret",
+            "tenantId": "${TENANT_ID}",
+            "clientId": "${CLIENT_ID}",
+            "clientSecret": "${CLIENT_SECRET}",
             "hostname": "ritense.sharepoint.com",
-            "sharePointSiteName": "your-sharepoint-site-id",
-            "baseFolderPath": "Werkdocumenten"
+            "sharePointSiteName": "ritense.sharepoint.com,ac9877c8-fe1e-4403-9499-e3b42f0f6281,c88a8667-129a-4419-9900-460a17d817bf",
+            "baseFolderPath": "zaakdossiers"
         }
     }
 ]
