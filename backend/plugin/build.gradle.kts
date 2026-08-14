@@ -31,6 +31,8 @@ val operatonVersion: String by project
 dependencies {
     compileOnly("com.ritense.valtimo:plugin-valtimo")
     compileOnly("com.ritense.valtimo:process-document")
+    compileOnly("com.ritense.valtimo:zaken-api")
+    compileOnly("com.ritense.valtimo:value-resolver")
     compileOnly("com.ritense.valtimo:contract")
     compileOnly("org.operaton.bpm:operaton-engine:$operatonVersion")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")

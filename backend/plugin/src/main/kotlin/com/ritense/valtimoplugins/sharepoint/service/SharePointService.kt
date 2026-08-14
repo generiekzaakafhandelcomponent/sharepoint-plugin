@@ -27,12 +27,11 @@ class SharePointService {
     fun listWorkDocuments(
         graphClient: MicrosoftGraphClient,
         driveId: String,
-        baseFolderPath: String,
         zaaktype: String,
         year: String,
         zaaknummer: String,
     ): List<WorkDocument> {
-        val folderPath = buildFolderPath(baseFolderPath, zaaktype, year, zaaknummer)
+        val folderPath = buildFolderPath(zaaktype, year, zaaknummer)
         return graphClient.listDriveItems(driveId, folderPath)
             .filter { it.file != null }
             .map { item ->
@@ -50,12 +49,11 @@ class SharePointService {
     fun createZaakFolder(
         graphClient: MicrosoftGraphClient,
         driveId: String,
-        baseFolderPath: String,
         zaaktype: String,
         year: String,
         zaaknummer: String,
     ) {
-        val parentPath = buildFolderPath(baseFolderPath, zaaktype, year)
+        val parentPath = buildFolderPath( zaaktype, year)
         graphClient.createFolder(driveId, parentPath, zaaknummer)
     }
 

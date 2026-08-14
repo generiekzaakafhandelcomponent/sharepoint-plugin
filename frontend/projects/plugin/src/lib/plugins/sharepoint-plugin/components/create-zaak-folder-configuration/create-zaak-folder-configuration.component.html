@@ -28,25 +28,7 @@
     [title]="'zaaktypeVariable' | pluginTranslate: pluginId | async"
     [margin]="true"
     [disabled]="obs.disabled"
-    [defaultValue]="obs.prefill?.zaaktypeVariable"
-    [required]="true"
-    [widthPx]="350"
-  ></v-input>
-  <v-input
-    name="yearVariable"
-    [title]="'yearVariable' | pluginTranslate: pluginId | async"
-    [margin]="true"
-    [disabled]="obs.disabled"
-    [defaultValue]="obs.prefill?.yearVariable"
-    [required]="true"
-    [widthPx]="350"
-  ></v-input>
-  <v-input
-    name="zaaknummerVariable"
-    [title]="'zaaknummerVariable' | pluginTranslate: pluginId | async"
-    [margin]="true"
-    [disabled]="obs.disabled"
-    [defaultValue]="obs.prefill?.zaaknummerVariable"
+    [defaultValue]="obs.prefill?.zaakType"
     [required]="true"
     [widthPx]="350"
   ></v-input>

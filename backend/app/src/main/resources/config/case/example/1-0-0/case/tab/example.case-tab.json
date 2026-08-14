@@ -3,7 +3,8 @@
         "key": "summary",
         "name": "Summary",
         "type": "widgets",
-        "contentKey": "-"
+        "contentKey": "-",
+        "showTasks": true
     },
     {
         "name": "Progress",

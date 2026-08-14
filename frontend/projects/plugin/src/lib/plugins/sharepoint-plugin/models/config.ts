@@ -26,15 +26,13 @@ interface SharePointPluginConfig extends PluginConfigurationData {
 }
 
 interface CreateZaakFolderConfig {
-  zaaktypeVariable: string;
-  yearVariable: string;
-  zaaknummerVariable: string;
+  zaakType: string;
 }
 
 interface ListWorkDocumentsConfig {
-  zaaktypeVariable: string;
-  yearVariable: string;
-  zaaknummerVariable: string;
+  zaakType: string;
+  year: string;
+  zaakNummer: string;
   resultVariable: string;
 }
 

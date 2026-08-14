@@ -21,6 +21,7 @@ import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
+import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import org.springframework.stereotype.Component
 
 @SkipComponentScan
@@ -28,7 +29,8 @@ import org.springframework.stereotype.Component
 class SharePointPluginFactory(
     pluginService: PluginService,
     private val sharePointService: SharePointService,
+    private val zaakValueResolverFactory: ZaakValueResolverFactory,
     private val objectMapper: ObjectMapper,
 ) : PluginFactory<SharePointPlugin>(pluginService) {
-    override fun create(): SharePointPlugin = SharePointPlugin(sharePointService, objectMapper)
+    override fun create(): SharePointPlugin = SharePointPlugin(sharePointService, zaakValueResolverFactory, objectMapper)
 }

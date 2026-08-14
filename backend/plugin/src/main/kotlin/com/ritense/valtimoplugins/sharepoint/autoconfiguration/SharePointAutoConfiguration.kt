@@ -21,6 +21,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPluginFactory
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.valtimoplugins.sharepoint.web.SharePointResource
+import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -36,13 +37,15 @@ class SharePointAutoConfiguration {
     fun sharePointPluginFactory(
         pluginService: PluginService,
         sharePointService: SharePointService,
+        zaakValueResolverFactory: ZaakValueResolverFactory,
         objectMapper: ObjectMapper,
-    ): SharePointPluginFactory = SharePointPluginFactory(pluginService, sharePointService, objectMapper)
+    ): SharePointPluginFactory = SharePointPluginFactory(pluginService, sharePointService, zaakValueResolverFactory, objectMapper)
 
     @Bean
     @ConditionalOnMissingBean(SharePointResource::class)
     fun sharePointResource(
         pluginService: PluginService,
         sharePointService: SharePointService,
+
     ): SharePointResource = SharePointResource(pluginService, sharePointService)
 }

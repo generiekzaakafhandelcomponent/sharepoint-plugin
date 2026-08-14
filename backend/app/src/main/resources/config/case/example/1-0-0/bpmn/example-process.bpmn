@@ -20,11 +20,11 @@
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_097uff5</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:task id="list-workdocuments" name="Geef een lijst van alle werkdocumenten">
+    <bpmn:sequenceFlow id="Flow_097uff5" sourceRef="list-workdocuments" targetRef="end-event" />
+    <bpmn:serviceTask id="list-workdocuments" name="Geef een lijst van alle werkdocumenten">
       <bpmn:incoming>Flow_3</bpmn:incoming>
       <bpmn:outgoing>Flow_097uff5</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_097uff5" sourceRef="list-workdocuments" targetRef="end-event" />
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
@@ -46,9 +46,8 @@
           <dc:Bounds x="604" y="225" width="74" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0b648sx_di" bpmnElement="list-workdocuments">
+      <bpmndi:BPMNShape id="Activity_0wdpmaz_di" bpmnElement="list-workdocuments">
         <dc:Bounds x="470" y="160" width="100" height="80" />
-        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
         <di:waypoint x="268" y="200" />

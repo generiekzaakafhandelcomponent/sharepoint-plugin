@@ -16,6 +16,8 @@
 
 package com.ritense.valtimoplugins.sharepoint.service.model
 
+import java.io.Serializable
+
 data class WorkDocument(
     val id: String,
     val name: String,
@@ -23,4 +25,4 @@ data class WorkDocument(
     val size: Long?,
     val lastModifiedDateTime: String?,
     val createdDateTime: String?,
-)
+) : Serializable

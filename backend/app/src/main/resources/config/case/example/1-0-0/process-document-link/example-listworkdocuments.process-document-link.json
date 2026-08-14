@@ -1,0 +1,7 @@
+[
+    {
+        "processDefinitionKey": "example-listworkdocuments-process",
+        "canInitializeDocument": false,
+        "startableByUser": true
+    }
+]

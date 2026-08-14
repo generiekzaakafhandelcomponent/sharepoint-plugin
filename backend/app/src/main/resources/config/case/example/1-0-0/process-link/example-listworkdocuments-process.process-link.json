@@ -6,14 +6,23 @@
         "formDefinitionName": "start-form-example"
     },
     {
-      "activityId": "create-zaak-folder",
+      "activityId": "list-workdocuments",
       "activityType": "bpmn:ServiceTask:start",
       "processLinkType": "plugin",
       "pluginDefinitionKey": "sharepoint-plugin",
-      "pluginActionDefinitionKey": "create-zaak-folder",
+      "pluginActionDefinitionKey": "list-work-documents",
       "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
       "actionProperties": {
-        "zaakType": "example"
+        "zaakType": "example",
+        "year": "2026",
+        "zaakNummer": "ZAAK-2026-0000000006",
+        "resultVariable": "workdocuments"
       }
-    }
-  ]
+    },
+  {
+    "activityId": "lijst_werkdocumenten_form",
+    "activityType": "bpmn:UserTask:create",
+    "processLinkType": "form",
+    "formDefinitionName": "controle"
+  }
+]

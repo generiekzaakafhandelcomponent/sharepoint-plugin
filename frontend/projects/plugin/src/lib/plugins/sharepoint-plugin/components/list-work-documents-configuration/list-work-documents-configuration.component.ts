@@ -53,7 +53,7 @@ export class ListWorkDocumentsConfigurationComponent
   }
 
   private handleValid(formValue: ListWorkDocumentsConfig): void {
-    const valid = !!(formValue.zaaktypeVariable && formValue.yearVariable && formValue.zaaknummerVariable && formValue.resultVariable);
+    const valid = !!(formValue.zaakType && formValue.resultVariable);
     this.valid$.next(valid);
     this.valid.emit(valid);
   }

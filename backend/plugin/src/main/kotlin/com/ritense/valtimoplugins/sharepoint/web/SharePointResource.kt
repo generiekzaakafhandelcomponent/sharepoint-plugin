@@ -54,7 +54,6 @@ class SharePointResource(
         val documents = sharePointService.listWorkDocuments(
             graphClient = plugin.microsoftGraphClient,
             driveId = plugin.driveId,
-            baseFolderPath = plugin.baseFolderPath,
             zaaktype = zaaktype,
             year = year,
             zaaknummer = zaaknummer,

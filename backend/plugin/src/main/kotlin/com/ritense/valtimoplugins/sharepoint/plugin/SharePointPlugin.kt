@@ -28,8 +28,10 @@ import com.ritense.plugin.domain.EventType
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
+import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
+import java.time.LocalDate
 
 private val logger = KotlinLogging.logger {}
 
@@ -40,6 +42,7 @@ private val logger = KotlinLogging.logger {}
 )
 open class SharePointPlugin(
     private val sharePointService: SharePointService,
+    private val zaakValueResolverFactory: ZaakValueResolverFactory,
     private val objectMapper: ObjectMapper,
 ) {
     @PluginProperty(key = "tenantId", secret = false)
@@ -60,8 +63,6 @@ open class SharePointPlugin(
     @PluginProperty(key = "baseFolderPath", secret = false)
     lateinit var baseFolderPath: String
 
-    var driveId: String = "init"
-
     val microsoftGraphClient: MicrosoftGraphClient by lazy {
         logger.debug {
             "Initializing GraphClient with tenantId=$tenantId, clientId=$clientId, hostname=$hostname, siteName=$sharePointSiteName"
@@ -74,14 +75,10 @@ open class SharePointPlugin(
         MicrosoftGraphClient(GraphServiceClient(credential, "https://graph.microsoft.com/.default"))
     }
 
-    @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
-    fun getConfigProps() {
-        try {
-            val siteId = microsoftGraphClient.getSiteId(hostname, sharePointSiteName)
-            driveId = microsoftGraphClient.getDriveIdByName(siteId, baseFolderPath)
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to resolve SharePoint site/drive configuration for $hostname/sites/$sharePointSiteName" }
-        }
+    val driveId: String by lazy {
+        logger.info { "Initializing driveId with hostname=$hostname, sitepath=$sharePointSiteName, baseFolderPath=$baseFolderPath" }
+        val siteId = microsoftGraphClient.getSiteId(hostname, sharePointSiteName)
+        microsoftGraphClient.getDriveIdByName(siteId, baseFolderPath)
     }
 
     @PluginAction(
@@ -92,22 +89,20 @@ open class SharePointPlugin(
     )
     open fun createZaakFolder(
         execution: DelegateExecution,
-        @PluginActionProperty zaaktypeVariable: String,
-        @PluginActionProperty yearVariable: String,
-        @PluginActionProperty zaaknummerVariable: String,
+        @PluginActionProperty zaakType: String,
     ) {
-        val zaaktype = zaaktypeVariable
-        val year = yearVariable
-        val zaaknummer = zaaknummerVariable
+        val documentId = execution.businessKey
+        val zaakNr = zaakValueResolverFactory.createResolver(documentId).apply("identificatie")
 
-        logger.info { "Creating SharePoint folder for zaak: $baseFolderPath/$zaaktype/$year/$zaaknummer" }
+        logger.info { "Creating SharePoint folder for zaak: $zaakNr" }
+
+        val yearVar = LocalDate.now().year.toString().uppercase()
         sharePointService.createZaakFolder(
             graphClient = microsoftGraphClient,
             driveId = driveId,
-            baseFolderPath = baseFolderPath,
-            zaaktype = zaaktype,
-            year = year,
-            zaaknummer = zaaknummer,
+            zaaktype = zaakType,
+            year = yearVar,
+            zaaknummer = zaakNr as String,
         )
     }
 
@@ -119,28 +114,21 @@ open class SharePointPlugin(
     )
     open fun listWorkDocuments(
         execution: DelegateExecution,
-        @PluginActionProperty zaaktypeVariable: String,
-        @PluginActionProperty yearVariable: String,
-        @PluginActionProperty zaaknummerVariable: String,
+        @PluginActionProperty zaakType: String,
+        @PluginActionProperty year: String,
+        @PluginActionProperty zaakNummer: String,
         @PluginActionProperty resultVariable: String,
     ) {
-        val zaaktype = execution.getVariable(zaaktypeVariable)?.toString()
-            ?: error("Procesvariabele '$zaaktypeVariable' niet gevonden in executie ${execution.id}")
-        val year = execution.getVariable(yearVariable)?.toString()
-            ?: error("Procesvariabele '$yearVariable' niet gevonden in executie ${execution.id}")
-        val zaaknummer = execution.getVariable(zaaknummerVariable)?.toString()
-            ?: error("Procesvariabele '$zaaknummerVariable' niet gevonden in executie ${execution.id}")
 
-        logger.info { "Listing SharePoint work documents for zaak: $baseFolderPath/$zaaktype/$year/$zaaknummer" }
+        logger.info { "Listing SharePoint work documents for zaak: $zaakNummer" }
         val documents = sharePointService.listWorkDocuments(
             graphClient = microsoftGraphClient,
             driveId = driveId,
-            baseFolderPath = baseFolderPath,
-            zaaktype = zaaktype,
+            zaaktype = zaakType,
             year = year,
-            zaaknummer = zaaknummer,
+            zaaknummer = zaakNummer,
         )
 
-        execution.setVariable(resultVariable, objectMapper.writeValueAsString(documents))
+        execution.setVariable(resultVariable, documents)
     }
 }

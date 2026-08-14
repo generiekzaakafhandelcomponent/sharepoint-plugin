@@ -53,7 +53,7 @@ export class CreateZaakFolderConfigurationComponent
   }
 
   private handleValid(formValue: CreateZaakFolderConfig): void {
-    const valid = !!(formValue.zaaktypeVariable && formValue.yearVariable && formValue.zaaknummerVariable);
+    const valid = !!(formValue.zaakType);
     this.valid$.next(valid);
     this.valid.emit(valid);
   }
