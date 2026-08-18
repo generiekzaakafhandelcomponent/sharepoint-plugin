@@ -21,18 +21,30 @@ import {FormModule, InputModule as ValtimoInputModule} from "@valtimo/components
 import {SharePointPluginConfigurationComponent} from "./components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
 import {CreateZaakFolderConfigurationComponent} from "./components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
 import {ListWorkDocumentsConfigurationComponent} from "./components/list-work-documents-configuration/list-work-documents-configuration.component";
+import {WorkdocumentsCaseTabComponent} from "./components/workdocuments-case-tab/workdocuments-case-tab.component";
+import {CASE_TAB_TOKEN} from "@valtimo/case";
 
 @NgModule({
   declarations: [
     SharePointPluginConfigurationComponent,
     CreateZaakFolderConfigurationComponent,
     ListWorkDocumentsConfigurationComponent,
+    WorkdocumentsCaseTabComponent,
   ],
   imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule],
   exports: [
     SharePointPluginConfigurationComponent,
     CreateZaakFolderConfigurationComponent,
     ListWorkDocumentsConfigurationComponent,
+    WorkdocumentsCaseTabComponent,
   ],
+  providers: [
+    {
+      provide: CASE_TAB_TOKEN,
+      useValue: {
+        'werkmap': WorkdocumentsCaseTabComponent,
+      },
+    }
+  ]
 })
 export class SharePointPluginModule {}

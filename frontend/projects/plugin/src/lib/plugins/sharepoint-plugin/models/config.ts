@@ -36,4 +36,13 @@ interface ListWorkDocumentsConfig {
   resultVariable: string;
 }
 
-export {SharePointPluginConfig, CreateZaakFolderConfig, ListWorkDocumentsConfig};
+interface WorkDocument {
+  id: string;
+  name: string;
+  webUrl: string;
+  size: number | null;
+  lastModifiedDateTime: string | null;
+  createdDateTime: string | null;
+}
+
+export {SharePointPluginConfig, CreateZaakFolderConfig, ListWorkDocumentsConfig, WorkDocument};

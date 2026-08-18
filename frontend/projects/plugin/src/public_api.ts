@@ -24,3 +24,4 @@ export * from "./lib/plugins/sharepoint-plugin/sharepoint-plugin.specification";
 export * from "./lib/plugins/sharepoint-plugin/components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
 export * from "./lib/plugins/sharepoint-plugin/components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
 export * from "./lib/plugins/sharepoint-plugin/components/list-work-documents-configuration/list-work-documents-configuration.component";
+export * from "./lib/plugins/sharepoint-plugin/components/workdocuments-case-tab/workdocuments-case-tab.component";

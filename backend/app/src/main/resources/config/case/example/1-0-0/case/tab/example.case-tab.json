@@ -17,5 +17,11 @@
         "key": "audit",
         "type": "standard",
         "contentKey": "audit"
+    },
+    {
+        "name": "Werkdocumenten",
+        "key": "workdocuments",
+        "type": "custom",
+        "contentKey": "sharepoint-workdocuments"
     }
 ]

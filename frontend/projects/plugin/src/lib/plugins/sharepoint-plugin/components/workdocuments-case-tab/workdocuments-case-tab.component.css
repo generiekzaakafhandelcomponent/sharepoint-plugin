@@ -1,0 +1,11 @@
+.workdocuments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.workdocuments-table th,
+.workdocuments-table td {
+  text-align: left;
+  padding: 0.5rem 1rem 0.5rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
