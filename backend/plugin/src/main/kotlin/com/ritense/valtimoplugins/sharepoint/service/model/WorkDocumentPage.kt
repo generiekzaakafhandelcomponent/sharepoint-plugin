@@ -18,12 +18,7 @@ package com.ritense.valtimoplugins.sharepoint.service.model
 
 import java.io.Serializable
 
-data class WorkDocument(
-    val id: String,
-    val name: String,
-    val webUrl: String,
-    val size: Long?,
-    val lastModifiedDateTime: String?,
-    val createdDateTime: String?,
-    val thumbnailUrl: String?,
+data class WorkDocumentPage(
+    val documents: List<WorkDocument>,
+    val nextLink: String?,
 ) : Serializable

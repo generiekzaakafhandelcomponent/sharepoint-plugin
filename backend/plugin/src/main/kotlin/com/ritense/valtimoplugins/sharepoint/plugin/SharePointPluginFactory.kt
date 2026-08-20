@@ -19,6 +19,7 @@ package com.ritense.valtimoplugins.sharepoint.plugin
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
@@ -30,7 +31,8 @@ class SharePointPluginFactory(
     pluginService: PluginService,
     private val sharePointService: SharePointService,
     private val zaakValueResolverFactory: ZaakValueResolverFactory,
-    private val objectMapper: ObjectMapper,
+    private val processDocumentService: ProcessDocumentService,
 ) : PluginFactory<SharePointPlugin>(pluginService) {
-    override fun create(): SharePointPlugin = SharePointPlugin(sharePointService, zaakValueResolverFactory, objectMapper)
+    override fun create(): SharePointPlugin =
+        SharePointPlugin(sharePointService, zaakValueResolverFactory, processDocumentService)
 }

@@ -12,19 +12,14 @@
       <bpmn:outgoing>Flow_3</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_1" sourceRef="start-event" targetRef="create-zaak-folder" />
-    <bpmn:sequenceFlow id="Flow_3" sourceRef="create-zaak-folder" targetRef="list-workdocuments" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="create-zaak-folder" targetRef="end-event" />
     <bpmn:endEvent id="end-event" name="Process ended">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, &#39;doc:/apiResult&#39;, execution.getVariable(&#39;apiResult&#39;))}" event="start" />
         <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, &#39;doc:/message&#39;, execution.getVariable(&#39;message&#39;))}" event="start" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_097uff5</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_097uff5" sourceRef="list-workdocuments" targetRef="end-event" />
-    <bpmn:serviceTask id="list-workdocuments" name="Geef een lijst van alle werkdocumenten">
       <bpmn:incoming>Flow_3</bpmn:incoming>
-      <bpmn:outgoing>Flow_097uff5</bpmn:outgoing>
-    </bpmn:serviceTask>
+    </bpmn:endEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
@@ -41,13 +36,10 @@
         <dc:Bounds x="330" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="end-event">
-        <dc:Bounds x="622" y="182" width="36" height="36" />
+        <dc:Bounds x="532" y="182" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="604" y="225" width="74" height="14" />
+          <dc:Bounds x="514" y="225" width="74" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0wdpmaz_di" bpmnElement="list-workdocuments">
-        <dc:Bounds x="470" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
         <di:waypoint x="268" y="200" />
@@ -55,11 +47,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
         <di:waypoint x="430" y="200" />
-        <di:waypoint x="470" y="200" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_097uff5_di" bpmnElement="Flow_097uff5">
-        <di:waypoint x="570" y="200" />
-        <di:waypoint x="622" y="200" />
+        <di:waypoint x="532" y="200" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

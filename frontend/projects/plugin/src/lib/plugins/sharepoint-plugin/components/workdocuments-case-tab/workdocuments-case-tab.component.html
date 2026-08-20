@@ -14,11 +14,15 @@
   ~ limitations under the License.
   -->
 
-<ng-container *ngIf="workDocuments$ | async as workDocuments; else loadingOrError">
+<p *ngIf="loading">Loading work documents...</p>
+<p *ngIf="error">Could not load work documents from SharePoint.</p>
+
+<ng-container *ngIf="!loading && !error">
   <p *ngIf="workDocuments.length === 0">No work documents found in SharePoint.</p>
   <table *ngIf="workDocuments.length > 0" class="workdocuments-table">
     <thead>
       <tr>
+        <th></th>
         <th>Name</th>
         <th>Size</th>
         <th>Last modified</th>
@@ -26,15 +30,30 @@
     </thead>
     <tbody>
       <tr *ngFor="let workDocument of workDocuments">
+        <td>
+          <img
+            *ngIf="workDocument.thumbnailUrl; else fileTypeIcon"
+            class="workdocuments-thumbnail"
+            [src]="workDocument.thumbnailUrl"
+            [alt]="workDocument.name"
+          />
+          <ng-template #fileTypeIcon>
+            <span
+              class="workdocuments-file-icon"
+              [style.background]="getFileTypeIcon(workDocument.name).color"
+            >{{ getFileTypeIcon(workDocument.name).label }}</span>
+          </ng-template>
+        </td>
         <td><a [href]="workDocument.webUrl" target="_blank" rel="noopener noreferrer">{{ workDocument.name }}</a></td>
         <td>{{ workDocument.size }}</td>
         <td>{{ workDocument.lastModifiedDateTime }}</td>
       </tr>
     </tbody>
   </table>
-</ng-container>
 
-<ng-template #loadingOrError>
-  <p *ngIf="loading">Loading work documents...</p>
-  <p *ngIf="error">Could not load work documents from SharePoint.</p>
-</ng-template>
+  <div class="workdocuments-pagination" *ngIf="hasMore">
+    <button type="button" [disabled]="loadingMore" (click)="loadMore()">
+      {{ loadingMore ? 'Loading...' : 'Load more' }}
+    </button>
+  </div>
+</ng-container>

@@ -21,7 +21,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPlugin
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
-import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocument
+import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocumentPage
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -43,21 +43,25 @@ class SharePointResource(
     @GetMapping("/{pluginConfigurationId}/work-documents")
     fun getWorkDocuments(
         @PathVariable pluginConfigurationId: UUID,
-        @RequestParam zaaktype: String,
+        @RequestParam docDefinition: String,
         @RequestParam year: String,
         @RequestParam zaaknummer: String,
-    ): ResponseEntity<List<WorkDocument>> {
+        @RequestParam(required = false) pageSize: Int?,
+        @RequestParam(required = false) nextLink: String?,
+    ): ResponseEntity<WorkDocumentPage> {
         val configId = PluginConfigurationId.existingId(pluginConfigurationId)
         val plugin = pluginService.createInstance(configId) as? SharePointPlugin
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Plugin configuration not found: $pluginConfigurationId")
 
-        val documents = sharePointService.listWorkDocuments(
+        val page = sharePointService.listWorkDocuments(
             graphClient = plugin.microsoftGraphClient,
             driveId = plugin.driveId,
-            zaaktype = zaaktype,
+            dossierDefinitionName = docDefinition,
             year = year,
             zaaknummer = zaaknummer,
+            pageSize = pageSize,
+            nextLink = nextLink,
         )
-        return ResponseEntity.ok(documents)
+        return ResponseEntity.ok(page)
     }
 }

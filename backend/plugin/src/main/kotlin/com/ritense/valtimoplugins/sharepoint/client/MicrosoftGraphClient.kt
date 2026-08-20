@@ -16,6 +16,7 @@
 
 package com.ritense.valtimoplugins.sharepoint.client
 
+import com.microsoft.graph.drives.item.items.item.children.ChildrenRequestBuilder
 import com.microsoft.graph.models.DriveItem
 import com.microsoft.graph.models.Folder
 import com.microsoft.graph.models.odataerrors.ODataError
@@ -24,26 +25,42 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
+data class DriveItemPage(
+    val items: List<DriveItem>,
+    val nextLink: String?,
+)
+
 class MicrosoftGraphClient(
     val graphServiceClient: GraphServiceClient,
 ) {
     fun listDriveItems(
         driveId: String,
         folderPath: String,
-    ): List<DriveItem> {
+        pageSize: Int? = null,
+        nextLink: String? = null,
+    ): DriveItemPage {
         return try {
-            // "root:/Zaakdossiers/besluit/2026/ZAAK-001:" — colon-terminated path addressing
-            val itemId = "root:/${folderPath.trim('/')}:"
+            val response = if (nextLink != null) {
+                ChildrenRequestBuilder(nextLink, graphServiceClient.requestAdapter).get()
+            } else {
+                // "root:/Zaakdossiers/besluit/2026/ZAAK-001:" — colon-terminated path addressing
+                val itemId = "root:/${folderPath.trim('/')}:"
 
-            graphServiceClient
-                .drives().byDriveId(driveId)
-                .items().byDriveItemId(itemId)
-                .children().get()
-                ?.value ?: emptyList()
+                graphServiceClient
+                    .drives().byDriveId(driveId)
+                    .items().byDriveItemId(itemId)
+                    .children().get { requestConfiguration ->
+                        if (pageSize != null) {
+                            requestConfiguration.queryParameters.top = pageSize
+                        }
+                        requestConfiguration.queryParameters.expand = arrayOf("thumbnails")
+                    }
+            }
+            DriveItemPage(response?.value ?: emptyList(), response?.odataNextLink)
         } catch (e: ODataError) {
             if (e.responseStatusCode == 404) {
                 logger.warn { "SharePoint folder not found at path: $folderPath" }
-                emptyList()
+                DriveItemPage(emptyList(), null)
             } else {
                 throw e
             }

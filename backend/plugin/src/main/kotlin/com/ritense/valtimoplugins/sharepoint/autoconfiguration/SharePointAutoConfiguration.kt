@@ -18,13 +18,16 @@ package com.ritense.valtimoplugins.sharepoint.autoconfiguration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPluginFactory
+import com.ritense.valtimoplugins.sharepoint.security.SharePointHttpSecurityConfigurer
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.valtimoplugins.sharepoint.web.SharePointResource
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
+import org.springframework.core.annotation.Order
 
 @AutoConfiguration
 class SharePointAutoConfiguration {
@@ -38,8 +41,9 @@ class SharePointAutoConfiguration {
         pluginService: PluginService,
         sharePointService: SharePointService,
         zaakValueResolverFactory: ZaakValueResolverFactory,
-        objectMapper: ObjectMapper,
-    ): SharePointPluginFactory = SharePointPluginFactory(pluginService, sharePointService, zaakValueResolverFactory, objectMapper)
+        processDocumentService: ProcessDocumentService,
+    ): SharePointPluginFactory =
+        SharePointPluginFactory(pluginService, sharePointService, zaakValueResolverFactory, processDocumentService)
 
     @Bean
     @ConditionalOnMissingBean(SharePointResource::class)
@@ -48,4 +52,9 @@ class SharePointAutoConfiguration {
         sharePointService: SharePointService,
 
     ): SharePointResource = SharePointResource(pluginService, sharePointService)
+
+    @Order(301)
+    @Bean
+    @ConditionalOnMissingBean(SharePointHttpSecurityConfigurer::class)
+    fun sharepointHttpSecurityConfigurer(): SharePointHttpSecurityConfigurer = SharePointHttpSecurityConfigurer()
 }

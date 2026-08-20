@@ -25,6 +25,8 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
+import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
@@ -43,7 +45,7 @@ private val logger = KotlinLogging.logger {}
 open class SharePointPlugin(
     private val sharePointService: SharePointService,
     private val zaakValueResolverFactory: ZaakValueResolverFactory,
-    private val objectMapper: ObjectMapper,
+    private val processDocumentService: ProcessDocumentService,
 ) {
     @PluginProperty(key = "tenantId", secret = false)
     lateinit var tenantId: String
@@ -89,21 +91,30 @@ open class SharePointPlugin(
     )
     open fun createZaakFolder(
         execution: DelegateExecution,
-        @PluginActionProperty zaakType: String,
+        @PluginActionProperty sharePointZaakFolderProcessVariable: String,
     ) {
         val documentId = execution.businessKey
         val zaakNr = zaakValueResolverFactory.createResolver(documentId).apply("identificatie")
 
         logger.info { "Creating SharePoint folder for zaak: $zaakNr" }
 
-        val yearVar = LocalDate.now().year.toString().uppercase()
-        sharePointService.createZaakFolder(
+        val document =
+            processDocumentService.getDocument(
+                OperatonProcessInstanceId(execution.processInstanceId),
+                execution
+            )
+
+        val yearVar = document.createdOn().year.toString()
+
+        val location = sharePointService.createZaakFolder(
             graphClient = microsoftGraphClient,
             driveId = driveId,
-            zaaktype = zaakType,
+            dossierDefinitionName = document.definitionId().name(),
             year = yearVar,
             zaaknummer = zaakNr as String,
         )
+
+        execution.setVariable(sharePointZaakFolderProcessVariable, location)
     }
 
     @PluginAction(
@@ -114,21 +125,21 @@ open class SharePointPlugin(
     )
     open fun listWorkDocuments(
         execution: DelegateExecution,
-        @PluginActionProperty zaakType: String,
+        @PluginActionProperty dossierDefinitionName: String,
         @PluginActionProperty year: String,
         @PluginActionProperty zaakNummer: String,
         @PluginActionProperty resultVariable: String,
     ) {
 
         logger.info { "Listing SharePoint work documents for zaak: $zaakNummer" }
-        val documents = sharePointService.listWorkDocuments(
+        val page = sharePointService.listWorkDocuments(
             graphClient = microsoftGraphClient,
             driveId = driveId,
-            zaaktype = zaakType,
+            dossierDefinitionName = dossierDefinitionName,
             year = year,
             zaaknummer = zaakNummer,
         )
 
-        execution.setVariable(resultVariable, documents)
+        execution.setVariable(resultVariable, page.documents)
     }
 }

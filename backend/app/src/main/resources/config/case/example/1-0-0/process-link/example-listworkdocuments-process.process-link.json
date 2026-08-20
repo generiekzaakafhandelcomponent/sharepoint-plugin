@@ -13,7 +13,7 @@
       "pluginActionDefinitionKey": "list-work-documents",
       "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
       "actionProperties": {
-        "zaakType": "example",
+        "dossierDefinitionName": "example",
         "year": "2026",
         "zaakNummer": "ZAAK-2026-0000000006",
         "resultVariable": "workdocuments"

@@ -18,16 +18,45 @@ import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import {DocumentService} from "@valtimo/document";
 import {PluginManagementService} from "@valtimo/plugin";
-import {catchError, Observable, of, switchMap, tap} from "rxjs";
+import {combineLatest, Observable, of, switchMap} from "rxjs";
 import {WorkdocumentsService} from "../../services/workdocuments.service";
 import {WorkDocument} from "../../models";
-import {ZakenApiZaaktypeLinkService} from "@valtimo/zgw";
 
-interface ZaakDocumentContent {
-  zaaktype?: string;
-  year?: string;
-  zaaknummer?: string;
+interface WorkDocumentsContext {
+  pluginConfigurationId: string;
+  docDefinition: string;
+  year: string;
+  zaaknummer: string;
 }
+
+interface FileTypeIcon {
+  label: string;
+  color: string;
+}
+
+const PAGE_SIZE = 25;
+
+const DEFAULT_FILE_TYPE_ICON: FileTypeIcon = {label: "FILE", color: "#9E9E9E"};
+
+const FILE_TYPE_ICONS: Record<string, FileTypeIcon> = {
+  pdf: {label: "PDF", color: "#DB4437"},
+  doc: {label: "DOC", color: "#2B579A"},
+  docx: {label: "DOC", color: "#2B579A"},
+  xls: {label: "XLS", color: "#217346"},
+  xlsx: {label: "XLS", color: "#217346"},
+  csv: {label: "CSV", color: "#217346"},
+  ppt: {label: "PPT", color: "#D24726"},
+  pptx: {label: "PPT", color: "#D24726"},
+  txt: {label: "TXT", color: "#616161"},
+  zip: {label: "ZIP", color: "#8A6D3B"},
+  rar: {label: "ZIP", color: "#8A6D3B"},
+  "7z": {label: "ZIP", color: "#8A6D3B"},
+  jpg: {label: "IMG", color: "#7E57C2"},
+  jpeg: {label: "IMG", color: "#7E57C2"},
+  png: {label: "IMG", color: "#7E57C2"},
+  gif: {label: "IMG", color: "#7E57C2"},
+  svg: {label: "IMG", color: "#7E57C2"},
+};
 
 @Component({
   standalone: false,
@@ -37,15 +66,18 @@ interface ZaakDocumentContent {
 })
 export class WorkdocumentsCaseTabComponent implements OnInit {
   private readonly documentId: string;
+  private context: WorkDocumentsContext | null = null;
+  private nextLink: string | undefined;
 
-  workDocuments$!: Observable<WorkDocument[]>;
+  workDocuments: WorkDocument[] = [];
   loading = true;
+  loadingMore = false;
   error = false;
+  hasMore = false;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly documentService: DocumentService,
-    private readonly zaakTypeLinkService: ZakenApiZaaktypeLinkService,
     private readonly pluginManagementService: PluginManagementService,
     private readonly workdocumentsService: WorkdocumentsService,
   ) {
@@ -53,34 +85,82 @@ export class WorkdocumentsCaseTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.workDocuments$ = this.documentService.getDocument(this.documentId).pipe(
-      switchMap(document => {
-        const content = document.content as ZaakDocumentContent;
-        console.log("content");
-        console.log(content);
-        return this.pluginManagementService
-          .getPluginConfigurationsByPluginDefinitionKey("sharepoint-plugin")
-          .pipe(
-            switchMap(configurations => {
-              const pluginConfigurationId = configurations[0]?.id;
-              if (!pluginConfigurationId || !content.zaaktype || !content.year || !content.zaaknummer) {
-                throw new Error("Missing SharePoint plugin configuration or zaak properties on document");
-              }
-              return this.workdocumentsService.getWorkDocuments(
-                pluginConfigurationId,
-                content.zaaktype,
-                content.year,
-                content.zaaknummer,
-              );
-            }),
-          );
-      }),
-      tap(() => (this.loading = false)),
-      catchError(() => {
+    this.resolveContext().subscribe({
+      next: context => {
+        this.context = context;
+        this.loadPage();
+      },
+      error: error => {
+        console.log(error);
         this.loading = false;
         this.error = true;
-        return of([]);
+      },
+    });
+  }
+
+  loadMore(): void {
+    if (!this.hasMore || this.loadingMore) {
+      return;
+    }
+    this.loadingMore = true;
+    this.loadPage();
+  }
+
+  getFileTypeIcon(name: string): FileTypeIcon {
+    const extension = name.split(".").pop()?.toLowerCase() ?? "";
+    return FILE_TYPE_ICONS[extension] ?? DEFAULT_FILE_TYPE_ICON;
+  }
+
+  private resolveContext(): Observable<WorkDocumentsContext> {
+    return combineLatest([
+      this.documentService.getDocument(this.documentId),
+      this.workdocumentsService.getZaakMetadata(this.documentId),
+      this.pluginManagementService.getPluginConfigurationsByPluginDefinitionKey("sharepoint-plugin"),
+    ]).pipe(
+      switchMap(([document, zaak, configurations]) => {
+        const pluginConfigurationId = configurations[0]?.id;
+        const startdatum = zaak?.startdatum ? new Date(zaak.startdatum) : null;
+        if (!pluginConfigurationId || !document?.definitionId.name || !zaak?.identificatie || !startdatum) {
+          throw new Error("Missing SharePoint plugin configuration or zaak properties");
+        }
+        return of({
+          pluginConfigurationId,
+          docDefinition: document.definitionId.name,
+          year: startdatum.getUTCFullYear().toString(),
+          zaaknummer: zaak.identificatie,
+        });
       }),
     );
+  }
+
+  private loadPage(): void {
+    const context = this.context;
+    if (!context) {
+      return;
+    }
+    this.workdocumentsService
+      .getWorkDocuments(
+        context.pluginConfigurationId,
+        context.docDefinition,
+        context.year,
+        context.zaaknummer,
+        PAGE_SIZE,
+        this.nextLink,
+      )
+      .subscribe({
+        next: page => {
+          this.workDocuments = [...this.workDocuments, ...page.documents];
+          this.nextLink = page.nextLink ?? undefined;
+          this.hasMore = !!page.nextLink;
+          this.loading = false;
+          this.loadingMore = false;
+        },
+        error: error => {
+          console.log(error);
+          this.loading = false;
+          this.loadingMore = false;
+          this.error = true;
+        },
+      });
   }
 }

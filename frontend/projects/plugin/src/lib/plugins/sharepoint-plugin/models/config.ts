@@ -26,11 +26,11 @@ interface SharePointPluginConfig extends PluginConfigurationData {
 }
 
 interface CreateZaakFolderConfig {
-  zaakType: string;
+  sharePointZaakFolderProcessVariable: string;
 }
 
 interface ListWorkDocumentsConfig {
-  zaakType: string;
+  dossierDefinitionName: string;
   year: string;
   zaakNummer: string;
   resultVariable: string;
@@ -43,6 +43,25 @@ interface WorkDocument {
   size: number | null;
   lastModifiedDateTime: string | null;
   createdDateTime: string | null;
+  thumbnailUrl: string | null;
 }
 
-export {SharePointPluginConfig, CreateZaakFolderConfig, ListWorkDocumentsConfig, WorkDocument};
+interface WorkDocumentPage {
+  documents: WorkDocument[];
+  nextLink: string | null;
+}
+
+interface ZaakMetadata {
+  zaaktype: string;
+  identificatie: string | null;
+  startdatum: string | null;
+}
+
+export {
+  SharePointPluginConfig,
+  CreateZaakFolderConfig,
+  ListWorkDocumentsConfig,
+  WorkDocument,
+  WorkDocumentPage,
+  ZaakMetadata,
+};

@@ -30,6 +30,7 @@ val operatonVersion: String by project
 
 dependencies {
     compileOnly("com.ritense.valtimo:plugin-valtimo")
+    compileOnly("com.ritense.valtimo:case")
     compileOnly("com.ritense.valtimo:process-document")
     compileOnly("com.ritense.valtimo:zaken-api")
     compileOnly("com.ritense.valtimo:value-resolver")
@@ -37,6 +38,7 @@ dependencies {
     compileOnly("org.operaton.bpm:operaton-engine:$operatonVersion")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-security")
 
     implementation("com.microsoft.graph:microsoft-graph:6.65.0")
     implementation("com.azure:azure-identity:1.18.4")

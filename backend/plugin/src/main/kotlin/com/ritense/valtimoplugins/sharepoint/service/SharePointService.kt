@@ -19,6 +19,7 @@ package com.ritense.valtimoplugins.sharepoint.service
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
 import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocument
+import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocumentPage
 import org.springframework.stereotype.Service
 
 @SkipComponentScan
@@ -27,12 +28,15 @@ class SharePointService {
     fun listWorkDocuments(
         graphClient: MicrosoftGraphClient,
         driveId: String,
-        zaaktype: String,
+        dossierDefinitionName: String,
         year: String,
         zaaknummer: String,
-    ): List<WorkDocument> {
-        val folderPath = buildFolderPath(zaaktype, year, zaaknummer)
-        return graphClient.listDriveItems(driveId, folderPath)
+        pageSize: Int? = null,
+        nextLink: String? = null,
+    ): WorkDocumentPage {
+        val folderPath = buildFolderPath(dossierDefinitionName, year, zaaknummer)
+        val page = graphClient.listDriveItems(driveId, folderPath, pageSize, nextLink)
+        val documents = page.items
             .filter { it.file != null }
             .map { item ->
                 WorkDocument(
@@ -42,19 +46,21 @@ class SharePointService {
                     size = item.size,
                     lastModifiedDateTime = item.lastModifiedDateTime?.toString(),
                     createdDateTime = item.createdDateTime?.toString(),
+                    thumbnailUrl = item.thumbnails?.firstOrNull()?.medium?.url,
                 )
             }
+        return WorkDocumentPage(documents, page.nextLink)
     }
 
     fun createZaakFolder(
         graphClient: MicrosoftGraphClient,
         driveId: String,
-        zaaktype: String,
+        dossierDefinitionName: String,
         year: String,
         zaaknummer: String,
-    ) {
-        val parentPath = buildFolderPath( zaaktype, year)
-        graphClient.createFolder(driveId, parentPath, zaaknummer)
+    ): String {
+        val parentPath = buildFolderPath( dossierDefinitionName, year)
+        return graphClient.createFolder(driveId, parentPath, zaaknummer)?.webUrl ?: ""
     }
 
     private fun buildFolderPath(vararg parts: String): String =

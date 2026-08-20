@@ -18,7 +18,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {ConfigService} from "@valtimo/shared";
 import {Observable} from "rxjs";
-import {WorkDocument} from "../models";
+import {WorkDocumentPage, ZaakMetadata} from "../models";
 
 @Injectable({
   providedIn: "root",
@@ -35,13 +35,28 @@ export class WorkdocumentsService {
 
   getWorkDocuments(
     pluginConfigurationId: string,
-    zaaktype: string,
+    docDefinition: string,
     year: string,
     zaaknummer: string,
-  ): Observable<WorkDocument[]> {
-    return this.http.get<WorkDocument[]>(
+    pageSize?: number,
+    nextLink?: string,
+  ): Observable<WorkDocumentPage> {
+    const params: Record<string, string> = {docDefinition, year, zaaknummer};
+    if (pageSize) {
+      params["pageSize"] = pageSize.toString();
+    }
+    if (nextLink) {
+      params["nextLink"] = nextLink;
+    }
+    return this.http.get<WorkDocumentPage>(
       `${this.valtimoEndpointUri}v1/plugin/sharepoint/${pluginConfigurationId}/work-documents`,
-      {params: {zaaktype, year, zaaknummer}},
+      {params},
+    );
+  }
+
+  getZaakMetadata(documentId: string): Observable<ZaakMetadata> {
+    return this.http.get<ZaakMetadata>(
+      `${this.valtimoEndpointUri}v1/zaken-api/document/${documentId}/zaak`,
     );
   }
 }

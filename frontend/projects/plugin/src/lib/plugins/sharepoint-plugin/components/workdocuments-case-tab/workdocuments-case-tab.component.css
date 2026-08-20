@@ -9,3 +9,29 @@
   padding: 0.5rem 1rem 0.5rem 0;
   border-bottom: 1px solid #e0e0e0;
 }
+
+.workdocuments-thumbnail {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.workdocuments-file-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.workdocuments-pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}

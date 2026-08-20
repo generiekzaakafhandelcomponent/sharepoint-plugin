@@ -13,7 +13,7 @@
       "pluginActionDefinitionKey": "create-zaak-folder",
       "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
       "actionProperties": {
-        "zaakType": "example"
+        "sharePointZaakFolderProcessVariable": "sharePointFolderLocation"
       }
     }
   ]

@@ -53,7 +53,7 @@ export class ListWorkDocumentsConfigurationComponent
   }
 
   private handleValid(formValue: ListWorkDocumentsConfig): void {
-    const valid = !!(formValue.zaakType && formValue.resultVariable);
+    const valid = !!(formValue.dossierDefinitionName && formValue.resultVariable);
     this.valid$.next(valid);
     this.valid.emit(valid);
   }

@@ -42,13 +42,14 @@ const sharepointPluginSpecification: PluginSpecification = {
       "create-zaak-folder": "Maak zaakmap aan in SharePoint",
       createZaakFolderDescription:
         "Maakt automatisch een map aan in SharePoint voor de werkdocumenten van de zaak.",
-      zaaktypeVariable: "Procesvariabele met zaaktype",
-      yearVariable: "Procesvariabele met jaar",
-      zaaknummerVariable: "Procesvariabele met zaaknummer",
+      dossierDefinitionName: "Dossier definitie naam",
+      yearVariable: "Jaar waarin dossier is aangemaakt",
+      zaaknummerVariable: "Zaaknummer",
       "list-work-documents": "Haal werkdocumenten op uit SharePoint",
       listWorkDocumentsDescription:
         "Haalt alle werkdocumenten op uit SharePoint voor de zaak en slaat ze op als procesvariabele.",
-      resultVariable: "Uitvoervariabele",
+      sharePointZaakFolderProcessVariable: "Process variable met sharepointlocatie",
+      resultVariable: "Process variabele met het resultaat",
     },
     en: {
       title: "SharePoint Plugin",
@@ -63,13 +64,14 @@ const sharepointPluginSpecification: PluginSpecification = {
       "create-zaak-folder": "Create case folder in SharePoint",
       createZaakFolderDescription:
         "Automatically creates a folder in SharePoint for the case's work documents.",
-      zaaktypeVariable: "Process variable containing case type",
-      yearVariable: "Process variable containing year",
-      zaaknummerVariable: "Process variable containing case number",
+      dossierDefinitionName: "Case type",
+      yearVariable: "Year case created",
+      zaaknummerVariable: "Case number",
       "list-work-documents": "Retrieve work documents from SharePoint",
       listWorkDocumentsDescription:
         "Retrieves all work documents from SharePoint for the case and stores them as a process variable.",
-      resultVariable: "Output variable",
+      sharePointZaakFolderProcessVariable: "Process variable with sharepointlocation",
+      resultVariable: "Process variabele with the result",
     },
   },
 };
