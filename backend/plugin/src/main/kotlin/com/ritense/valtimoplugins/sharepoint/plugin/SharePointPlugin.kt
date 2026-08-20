@@ -17,14 +17,11 @@
 package com.ritense.valtimoplugins.sharepoint.plugin
 
 import com.azure.identity.ClientSecretCredentialBuilder
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.graph.serviceclient.GraphServiceClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.EventType
 import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
@@ -33,8 +30,6 @@ import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
-import org.operaton.bpm.engine.variable.Variables
-import java.time.LocalDate
 
 private val logger = KotlinLogging.logger {}
 
