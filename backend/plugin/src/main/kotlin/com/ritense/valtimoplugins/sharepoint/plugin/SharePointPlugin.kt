@@ -33,6 +33,7 @@ import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
+import org.operaton.bpm.engine.variable.Variables
 import java.time.LocalDate
 
 private val logger = KotlinLogging.logger {}
@@ -115,31 +116,5 @@ open class SharePointPlugin(
         )
 
         execution.setVariable(sharePointZaakFolderProcessVariable, location)
-    }
-
-    @PluginAction(
-        key = "list-work-documents",
-        title = "Haal werkdocumenten op uit SharePoint",
-        description = "Haalt alle werkdocumenten op voor een zaak en slaat ze op als procesvariabele.",
-        activityTypes = [SERVICE_TASK_START],
-    )
-    open fun listWorkDocuments(
-        execution: DelegateExecution,
-        @PluginActionProperty dossierDefinitionName: String,
-        @PluginActionProperty year: String,
-        @PluginActionProperty zaakNummer: String,
-        @PluginActionProperty resultVariable: String,
-    ) {
-
-        logger.info { "Listing SharePoint work documents for zaak: $zaakNummer" }
-        val page = sharePointService.listWorkDocuments(
-            graphClient = microsoftGraphClient,
-            driveId = driveId,
-            dossierDefinitionName = dossierDefinitionName,
-            year = year,
-            zaaknummer = zaakNummer,
-        )
-
-        execution.setVariable(resultVariable, page.documents)
     }
 }

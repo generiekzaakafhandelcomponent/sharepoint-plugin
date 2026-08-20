@@ -26,4 +26,8 @@ data class WorkDocument(
     val lastModifiedDateTime: String?,
     val createdDateTime: String?,
     val thumbnailUrl: String?,
-) : Serializable
+) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = 654128317587487803L
+    }
+}

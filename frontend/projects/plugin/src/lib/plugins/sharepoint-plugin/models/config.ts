@@ -29,13 +29,6 @@ interface CreateZaakFolderConfig {
   sharePointZaakFolderProcessVariable: string;
 }
 
-interface ListWorkDocumentsConfig {
-  dossierDefinitionName: string;
-  year: string;
-  zaakNummer: string;
-  resultVariable: string;
-}
-
 interface WorkDocument {
   id: string;
   name: string;
@@ -60,7 +53,6 @@ interface ZaakMetadata {
 export {
   SharePointPluginConfig,
   CreateZaakFolderConfig,
-  ListWorkDocumentsConfig,
   WorkDocument,
   WorkDocumentPage,
   ZaakMetadata,

@@ -43,6 +43,9 @@ dependencies {
     implementation("com.microsoft.graph:microsoft-graph:6.65.0")
     implementation("com.azure:azure-identity:1.18.4")
 
+    implementation("org.operaton.spin:operaton-spin-dataformat-json-jackson:1.0.3")
+    implementation("org.operaton.bpm:operaton-engine-plugin-spin:1.0.3")
+
     compileOnly("io.github.oshai:kotlin-logging:$kotlinLoggingVersion")
 
     // Testing

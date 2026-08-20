@@ -18,7 +18,6 @@ import {PluginSpecification} from "@valtimo/plugin";
 import {SharePointPluginConfigurationComponent} from "./components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
 import {SHAREPOINT_PLUGIN_LOGO_BASE64} from "./assets";
 import {CreateZaakFolderConfigurationComponent} from "./components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
-import {ListWorkDocumentsConfigurationComponent} from "./components/list-work-documents-configuration/list-work-documents-configuration.component";
 
 const sharepointPluginSpecification: PluginSpecification = {
   pluginId: "sharepoint-plugin",
@@ -26,7 +25,6 @@ const sharepointPluginSpecification: PluginSpecification = {
   pluginLogoBase64: SHAREPOINT_PLUGIN_LOGO_BASE64,
   functionConfigurationComponents: {
     "create-zaak-folder": CreateZaakFolderConfigurationComponent,
-    "list-work-documents": ListWorkDocumentsConfigurationComponent,
   },
   pluginTranslations: {
     nl: {
@@ -42,14 +40,7 @@ const sharepointPluginSpecification: PluginSpecification = {
       "create-zaak-folder": "Maak zaakmap aan in SharePoint",
       createZaakFolderDescription:
         "Maakt automatisch een map aan in SharePoint voor de werkdocumenten van de zaak.",
-      dossierDefinitionName: "Dossier definitie naam",
-      yearVariable: "Jaar waarin dossier is aangemaakt",
-      zaaknummerVariable: "Zaaknummer",
-      "list-work-documents": "Haal werkdocumenten op uit SharePoint",
-      listWorkDocumentsDescription:
-        "Haalt alle werkdocumenten op uit SharePoint voor de zaak en slaat ze op als procesvariabele.",
       sharePointZaakFolderProcessVariable: "Process variable met sharepointlocatie",
-      resultVariable: "Process variabele met het resultaat",
     },
     en: {
       title: "SharePoint Plugin",
@@ -64,14 +55,7 @@ const sharepointPluginSpecification: PluginSpecification = {
       "create-zaak-folder": "Create case folder in SharePoint",
       createZaakFolderDescription:
         "Automatically creates a folder in SharePoint for the case's work documents.",
-      dossierDefinitionName: "Case type",
-      yearVariable: "Year case created",
-      zaaknummerVariable: "Case number",
-      "list-work-documents": "Retrieve work documents from SharePoint",
-      listWorkDocumentsDescription:
-        "Retrieves all work documents from SharePoint for the case and stores them as a process variable.",
       sharePointZaakFolderProcessVariable: "Process variable with sharepointlocation",
-      resultVariable: "Process variabele with the result",
     },
   },
 };
