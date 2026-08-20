@@ -41,6 +41,9 @@ const sharepointPluginSpecification: PluginSpecification = {
       createZaakFolderDescription:
         "Maakt automatisch een map aan in SharePoint voor de werkdocumenten van de zaak.",
       sharePointZaakFolderProcessVariable: "Process variable met sharepointlocatie",
+      workDocumentsNameHeader: "Naam",
+      workDocumentsSizeHeader: "Grootte",
+      workDocumentsLastModifiedHeader: "Laatst gewijzigd",
     },
     en: {
       title: "SharePoint Plugin",
@@ -56,6 +59,9 @@ const sharepointPluginSpecification: PluginSpecification = {
       createZaakFolderDescription:
         "Automatically creates a folder in SharePoint for the case's work documents.",
       sharePointZaakFolderProcessVariable: "Process variable with sharepointlocation",
+      workDocumentsNameHeader: "Name",
+      workDocumentsSizeHeader: "Size",
+      workDocumentsLastModifiedHeader: "Last modified",
     },
   },
 };

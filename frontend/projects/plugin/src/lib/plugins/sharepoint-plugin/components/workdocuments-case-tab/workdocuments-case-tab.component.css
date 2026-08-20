@@ -1,3 +1,13 @@
+.workdocuments-location {
+  text-align: right;
+}
+
+.workdocuments-external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .workdocuments-table {
   width: 100%;
   border-collapse: collapse;
@@ -29,9 +39,10 @@
   letter-spacing: 0.02em;
 }
 
-.workdocuments-pagination {
+.workdocuments-footer {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 1rem;
   margin-top: 1rem;
 }

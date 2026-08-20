@@ -18,6 +18,7 @@ import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import {DocumentService} from "@valtimo/document";
 import {PluginManagementService} from "@valtimo/plugin";
+import {TranslateService} from "@ngx-translate/core";
 import {combineLatest, Observable, of, switchMap} from "rxjs";
 import {WorkdocumentsService} from "../../services/workdocuments.service";
 import {WorkDocument} from "../../models";
@@ -27,6 +28,10 @@ interface WorkDocumentsContext {
   docDefinition: string;
   year: string;
   zaaknummer: string;
+}
+
+interface DocumentContent {
+  sharePointMap?: string;
 }
 
 interface FileTypeIcon {
@@ -74,17 +79,24 @@ export class WorkdocumentsCaseTabComponent implements OnInit {
   loadingMore = false;
   error = false;
   hasMore = false;
+  sharePointLocation: string | null = null;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly documentService: DocumentService,
     private readonly pluginManagementService: PluginManagementService,
     private readonly workdocumentsService: WorkdocumentsService,
+    private readonly translateService: TranslateService,
   ) {
     this.documentId = this.route.snapshot.paramMap.get("documentId") || "";
   }
 
   ngOnInit(): void {
+    this.documentService.getDocument(this.documentId).subscribe(document => {
+      const content = document.content as DocumentContent;
+      this.sharePointLocation = content.sharePointMap ?? null;
+    });
+
     this.resolveContext().subscribe({
       next: context => {
         this.context = context;
@@ -106,9 +118,52 @@ export class WorkdocumentsCaseTabComponent implements OnInit {
     this.loadPage();
   }
 
+  refresh(): void {
+    if (this.loading || this.loadingMore) {
+      return;
+    }
+    this.workDocuments = [];
+    this.nextLink = undefined;
+    this.hasMore = false;
+    this.error = false;
+    this.loading = true;
+    this.loadPage();
+  }
+
   getFileTypeIcon(name: string): FileTypeIcon {
     const extension = name.split(".").pop()?.toLowerCase() ?? "";
     return FILE_TYPE_ICONS[extension] ?? DEFAULT_FILE_TYPE_ICON;
+  }
+
+  formatFileSize(size: number | null): string {
+    if (size === null) {
+      return "";
+    }
+    if (size < 1024) {
+      return `${size} B`;
+    }
+    const kilobytes = size / 1024;
+    if (kilobytes < 1024) {
+      return `${Math.round(kilobytes)} KB`;
+    }
+    return `${Math.round(kilobytes / 1024)} MB`;
+  }
+
+  formatLastModified(dateTime: string | null): string {
+    if (!dateTime) {
+      return "";
+    }
+    const date = new Date(dateTime);
+    if (isNaN(date.getTime())) {
+      return dateTime;
+    }
+    return new Intl.DateTimeFormat(this.translateService.currentLang, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
   }
 
   private resolveContext(): Observable<WorkDocumentsContext> {

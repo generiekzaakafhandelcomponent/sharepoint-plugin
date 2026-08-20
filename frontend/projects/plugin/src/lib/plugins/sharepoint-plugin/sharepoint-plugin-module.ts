@@ -22,6 +22,7 @@ import {SharePointPluginConfigurationComponent} from "./components/sharepoint-pl
 import {CreateZaakFolderConfigurationComponent} from "./components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
 import {WorkdocumentsCaseTabComponent} from "./components/workdocuments-case-tab/workdocuments-case-tab.component";
 import {CASE_TAB_TOKEN} from "@valtimo/case";
+import {ButtonModule} from "carbon-components-angular";
 
 @NgModule({
   declarations: [
@@ -29,7 +30,7 @@ import {CASE_TAB_TOKEN} from "@valtimo/case";
     CreateZaakFolderConfigurationComponent,
     WorkdocumentsCaseTabComponent,
   ],
-  imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule],
+  imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule, ButtonModule],
   exports: [
     SharePointPluginConfigurationComponent,
     CreateZaakFolderConfigurationComponent,
