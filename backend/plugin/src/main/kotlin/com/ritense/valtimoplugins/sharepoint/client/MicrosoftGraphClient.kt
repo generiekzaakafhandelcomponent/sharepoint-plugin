@@ -16,6 +16,7 @@
 
 package com.ritense.valtimoplugins.sharepoint.client
 
+import com.azure.identity.ClientSecretCredentialBuilder
 import com.microsoft.graph.drives.item.items.item.children.ChildrenRequestBuilder
 import com.microsoft.graph.models.DriveItem
 import com.microsoft.graph.models.Folder
@@ -33,6 +34,17 @@ data class DriveItemPage(
 class MicrosoftGraphClient(
     val graphServiceClient: GraphServiceClient,
 ) {
+    companion object {
+        fun build(tenantId: String, clientId: String, clientSecret: String): MicrosoftGraphClient {
+            val credential = ClientSecretCredentialBuilder()
+                .tenantId(tenantId)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build()
+            return MicrosoftGraphClient(GraphServiceClient(credential, "https://graph.microsoft.com/.default"))
+        }
+    }
+
     fun listDriveItems(
         driveId: String,
         folderPath: String,

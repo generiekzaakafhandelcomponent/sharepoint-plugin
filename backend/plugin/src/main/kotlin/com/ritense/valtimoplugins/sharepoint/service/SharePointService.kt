@@ -16,15 +16,48 @@
 
 package com.ritense.valtimoplugins.sharepoint.service
 
+import com.microsoft.graph.models.odataerrors.ODataError
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
+import com.ritense.valtimoplugins.sharepoint.service.model.TestConnectionResult
 import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocument
 import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocumentPage
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+
+private val logger = KotlinLogging.logger {}
 
 @SkipComponentScan
 @Service
 class SharePointService {
+    fun testConnection(
+        tenantId: String,
+        clientId: String,
+        clientSecret: String,
+        hostname: String,
+        sharePointSiteName: String,
+        baseFolderPath: String,
+    ): TestConnectionResult {
+        return try {
+            val graphClient = MicrosoftGraphClient.build(tenantId, clientId, clientSecret)
+            val siteId = graphClient.getSiteId(hostname, sharePointSiteName)
+            graphClient.getDriveIdByName(siteId, baseFolderPath)
+            TestConnectionResult(success = true, message = "Connection successful.")
+        } catch (e: ODataError) {
+            logger.warn(e) { "SharePoint connection test failed for $hostname/sites/$sharePointSiteName" }
+            TestConnectionResult(
+                success = false,
+                message = "Could not find the site or document library '$baseFolderPath'. If the hostname " +
+                    "and site name look correct, verify that Sites.Read.All (or Sites.Selected) is granted " +
+                    "and admin-consented for this app registration — SharePoint returns \"not found\" " +
+                    "instead of \"forbidden\" when consent is missing.",
+            )
+        } catch (e: Exception) {
+            logger.warn(e) { "SharePoint connection test failed for $hostname/sites/$sharePointSiteName" }
+            TestConnectionResult(success = false, message = "Could not connect to SharePoint: ${e.message}")
+        }
+    }
+
     fun listWorkDocuments(
         graphClient: MicrosoftGraphClient,
         driveId: String,

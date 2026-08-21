@@ -50,10 +50,16 @@ interface ZaakMetadata {
   startdatum: string | null;
 }
 
+interface TestConnectionResult {
+  success: boolean;
+  message: string;
+}
+
 export {
   SharePointPluginConfig,
   CreateZaakFolderConfig,
   WorkDocument,
   WorkDocumentPage,
   ZaakMetadata,
+  TestConnectionResult,
 };

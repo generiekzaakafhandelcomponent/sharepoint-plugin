@@ -15,9 +15,11 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
+import {HttpClient} from "@angular/common/http";
+import {ConfigService} from "@valtimo/shared";
 import {PluginConfigurationComponent, PluginConfigurationData} from "@valtimo/plugin";
 import {BehaviorSubject, combineLatest, Observable, Subscription, take} from "rxjs";
-import {SharePointPluginConfig} from "../../models";
+import {SharePointPluginConfig, TestConnectionResult} from "../../models";
 
 @Component({
   standalone: false,
@@ -36,8 +38,19 @@ export class SharePointPluginConfigurationComponent
     new EventEmitter<PluginConfigurationData>();
 
   private saveSubscription!: Subscription;
+  private readonly valtimoEndpointUri: string;
   private readonly formValue$ = new BehaviorSubject<SharePointPluginConfig | null>(null);
   private readonly valid$ = new BehaviorSubject<boolean>(false);
+
+  testingConnection = false;
+  testConnectionResult: TestConnectionResult | null = null;
+
+  constructor(
+    private readonly http: HttpClient,
+    private readonly configService: ConfigService,
+  ) {
+    this.valtimoEndpointUri = this.configService.config.valtimoApi.endpointUri;
+  }
 
   ngOnInit(): void {
     this.openSaveSubscription();
@@ -49,7 +62,51 @@ export class SharePointPluginConfigurationComponent
 
   formValueChange(formValue: SharePointPluginConfig): void {
     this.formValue$.next(formValue);
+    this.testConnectionResult = null;
     this.handleValid(formValue);
+  }
+
+  canTestConnection(): boolean {
+    const formValue = this.formValue$.value;
+    return !!(
+      formValue?.tenantId &&
+      formValue?.clientId &&
+      formValue?.clientSecret &&
+      formValue?.hostname &&
+      formValue?.sharePointSiteName &&
+      formValue?.baseFolderPath
+    );
+  }
+
+  testConnection(): void {
+    const formValue = this.formValue$.value;
+    if (!formValue || this.testingConnection) {
+      return;
+    }
+    this.testingConnection = true;
+    this.testConnectionResult = null;
+    this.http
+      .post<TestConnectionResult>(`${this.valtimoEndpointUri}v1/plugin/sharepoint/test-connection`, {
+        tenantId: formValue.tenantId,
+        clientId: formValue.clientId,
+        clientSecret: formValue.clientSecret,
+        hostname: formValue.hostname,
+        sharePointSiteName: formValue.sharePointSiteName,
+        baseFolderPath: formValue.baseFolderPath,
+      })
+      .subscribe({
+        next: result => {
+          this.testConnectionResult = result;
+          this.testingConnection = false;
+        },
+        error: () => {
+          this.testConnectionResult = {
+            success: false,
+            message: "Could not reach the server to test the connection.",
+          };
+          this.testingConnection = false;
+        },
+      });
   }
 
   private handleValid(formValue: SharePointPluginConfig): void {

@@ -16,8 +16,6 @@
 
 package com.ritense.valtimoplugins.sharepoint.plugin
 
-import com.azure.identity.ClientSecretCredentialBuilder
-import com.microsoft.graph.serviceclient.GraphServiceClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -65,12 +63,7 @@ open class SharePointPlugin(
         logger.debug {
             "Initializing GraphClient with tenantId=$tenantId, clientId=$clientId, hostname=$hostname, siteName=$sharePointSiteName"
         }
-        val credential = ClientSecretCredentialBuilder()
-            .tenantId(tenantId)
-            .clientId(clientId)
-            .clientSecret(clientSecret)
-            .build()
-        MicrosoftGraphClient(GraphServiceClient(credential, "https://graph.microsoft.com/.default"))
+        MicrosoftGraphClient.build(tenantId, clientId, clientSecret)
     }
 
     val driveId: String by lazy {

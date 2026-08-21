@@ -16,11 +16,13 @@
 
 package com.ritense.valtimoplugins.sharepoint.security
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 
@@ -31,6 +33,8 @@ class SharePointHttpSecurityConfigurer: HttpSecurityConfigurer {
                 requests
                     .requestMatchers(GET, "/api/v1/plugin/sharepoint/*/work-documents")
                     .hasAuthority(USER)
+                    .requestMatchers(POST, "/api/v1/plugin/sharepoint/test-connection")
+                    .hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

@@ -51,6 +51,8 @@ const sharepointPluginSpecification: PluginSpecification = {
       workDocumentsLoadMore: "Meer laden",
       workDocumentsLoadingMore: "Laden...",
       workDocumentsRefresh: "Vernieuwen",
+      testConnection: "Test verbinding",
+      testingConnection: "Verbinding testen...",
     },
     en: {
       title: "SharePoint Plugin",
@@ -76,6 +78,8 @@ const sharepointPluginSpecification: PluginSpecification = {
       workDocumentsLoadMore: "Load more",
       workDocumentsLoadingMore: "Loading...",
       workDocumentsRefresh: "Refresh",
+      testConnection: "Test connection",
+      testingConnection: "Testing connection...",
     },
   },
 };

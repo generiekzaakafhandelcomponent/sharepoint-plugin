@@ -88,3 +88,16 @@
     [widthPx]="350"
   ></v-input>
 </v-form>
+
+<button
+  type="button"
+  cdsButton="secondary"
+  [disabled]="!canTestConnection() || testingConnection"
+  (click)="testConnection()"
+>
+  {{ (testingConnection ? 'testingConnection' : 'testConnection') | pluginTranslate: pluginId | async }}
+</button>
+
+<p *ngIf="testConnectionResult" [style.color]="testConnectionResult.success ? 'green' : 'red'">
+  {{ testConnectionResult.message }}
+</p>
