@@ -1,7 +1,7 @@
 {
     "name": "@valtimo-plugins/sharepoint-plugin",
     "license": "EUPL-1.2",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "scripts": {
         "build": "ng build @valtimo-plugins/sharepoint-plugin",
         "watch": "ng build @valtimo-plugins/sharepoint-plugin --watch"
