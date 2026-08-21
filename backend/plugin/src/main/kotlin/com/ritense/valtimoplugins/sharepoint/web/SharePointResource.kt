@@ -57,15 +57,19 @@ class SharePointResource(
         val plugin = pluginService.createInstance(configId) as? SharePointPlugin
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Plugin configuration not found: $pluginConfigurationId")
 
-        val page = sharePointService.listWorkDocuments(
-            graphClient = plugin.microsoftGraphClient,
-            driveId = plugin.driveId,
-            dossierDefinitionName = docDefinition,
-            year = year,
-            zaaknummer = zaaknummer,
-            pageSize = pageSize,
-            nextLink = nextLink,
-        )
+        val page = try {
+            sharePointService.listWorkDocuments(
+                graphClient = plugin.microsoftGraphClient,
+                driveId = plugin.driveId,
+                dossierDefinitionName = docDefinition,
+                year = year,
+                zaaknummer = zaaknummer,
+                pageSize = pageSize,
+                nextLink = nextLink,
+            )
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        }
         return ResponseEntity.ok(page)
     }
 

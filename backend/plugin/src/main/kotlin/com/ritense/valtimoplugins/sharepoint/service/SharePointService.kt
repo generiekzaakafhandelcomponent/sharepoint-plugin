@@ -24,12 +24,35 @@ import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocument
 import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocumentPage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
 
 private val logger = KotlinLogging.logger {}
 
 @SkipComponentScan
 @Service
 class SharePointService {
+
+    private val driveIdCache = ConcurrentHashMap<String, String>()
+
+    fun resolveDriveId(
+        graphClient: MicrosoftGraphClient,
+        hostname: String,
+        sharePointSiteName: String,
+        baseFolderPath: String,
+    ): String {
+        return driveIdCache.computeIfAbsent(driveIdCacheKey(hostname, sharePointSiteName, baseFolderPath)) {
+            val siteId = graphClient.getSiteId(hostname, sharePointSiteName)
+            graphClient.getDriveIdByName(siteId, baseFolderPath)
+        }
+    }
+
+    fun evictDriveId(hostname: String, sharePointSiteName: String, baseFolderPath: String) {
+        driveIdCache.remove(driveIdCacheKey(hostname, sharePointSiteName, baseFolderPath))
+    }
+
+    private fun driveIdCacheKey(hostname: String, sharePointSiteName: String, baseFolderPath: String): String =
+        "$hostname|$sharePointSiteName|$baseFolderPath"
+
     fun testConnection(
         tenantId: String,
         clientId: String,
@@ -92,10 +115,24 @@ class SharePointService {
         year: String,
         zaaknummer: String,
     ): String {
-        val parentPath = buildFolderPath( dossierDefinitionName, year)
-        return graphClient.createFolder(driveId, parentPath, zaaknummer)?.webUrl ?: ""
+        val parentPath = buildFolderPath(dossierDefinitionName, year)
+        val folderName = validatePathSegment(zaaknummer)
+        return graphClient.createFolder(driveId, parentPath, folderName)?.webUrl ?: ""
     }
 
     private fun buildFolderPath(vararg parts: String): String =
-        parts.filter { it.isNotBlank() }.joinToString("/")
+        parts.filter { it.isNotBlank() }
+            .map(::validatePathSegment)
+            .joinToString("/")
+
+    private fun validatePathSegment(segment: String): String {
+        require(PATH_SEGMENT_PATTERN.matches(segment)) {
+            "Invalid value '$segment': only letters, digits, spaces, hyphens and underscores are allowed."
+        }
+        return segment
+    }
+
+    companion object {
+        private val PATH_SEGMENT_PATTERN = Regex("^[\\p{L}\\p{N} _-]+$")
+    }
 }

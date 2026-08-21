@@ -19,7 +19,9 @@ package com.ritense.valtimoplugins.sharepoint.plugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.EventType
 import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
@@ -68,8 +70,12 @@ open class SharePointPlugin(
 
     val driveId: String by lazy {
         logger.info { "Initializing driveId with hostname=$hostname, sitepath=$sharePointSiteName, baseFolderPath=$baseFolderPath" }
-        val siteId = microsoftGraphClient.getSiteId(hostname, sharePointSiteName)
-        microsoftGraphClient.getDriveIdByName(siteId, baseFolderPath)
+        sharePointService.resolveDriveId(microsoftGraphClient, hostname, sharePointSiteName, baseFolderPath)
+    }
+
+    @PluginEvent(invokedOn = [EventType.UPDATE])
+    fun onUpdate() {
+        sharePointService.evictDriveId(hostname, sharePointSiteName, baseFolderPath)
     }
 
     @PluginAction(

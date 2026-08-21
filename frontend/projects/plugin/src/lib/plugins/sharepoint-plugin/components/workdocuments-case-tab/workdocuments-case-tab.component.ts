@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import {DocumentService} from "@valtimo/document";
 import {PluginManagementService} from "@valtimo/plugin";
 import {TranslateService} from "@ngx-translate/core";
-import {combineLatest, Observable, of, switchMap} from "rxjs";
+import {combineLatest, Observable, of, Subscription, switchMap} from "rxjs";
 import {WorkdocumentsService} from "../../services/workdocuments.service";
 import {WorkDocument} from "../../models";
 
@@ -69,8 +69,9 @@ const FILE_TYPE_ICONS: Record<string, FileTypeIcon> = {
   templateUrl: "./workdocuments-case-tab.component.html",
   styleUrl: "./workdocuments-case-tab.component.css",
 })
-export class WorkdocumentsCaseTabComponent implements OnInit {
+export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
   private readonly documentId: string;
+  private readonly subscriptions = new Subscription();
   private context: WorkDocumentsContext | null = null;
   private nextLink: string | undefined;
 
@@ -92,22 +93,30 @@ export class WorkdocumentsCaseTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.documentService.getDocument(this.documentId).subscribe(document => {
-      const content = document.content as DocumentContent;
-      this.sharePointLocation = content.sharePointMap ?? null;
-    });
+    this.subscriptions.add(
+      this.documentService.getDocument(this.documentId).subscribe(document => {
+        const content = document.content as DocumentContent;
+        this.sharePointLocation = content.sharePointMap ?? null;
+      }),
+    );
 
-    this.resolveContext().subscribe({
-      next: context => {
-        this.context = context;
-        this.loadPage();
-      },
-      error: error => {
-        console.log(error);
-        this.loading = false;
-        this.error = true;
-      },
-    });
+    this.subscriptions.add(
+      this.resolveContext().subscribe({
+        next: context => {
+          this.context = context;
+          this.loadPage();
+        },
+        error: error => {
+          console.log(error);
+          this.loading = false;
+          this.error = true;
+        },
+      }),
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   loadMore(): void {
@@ -193,29 +202,31 @@ export class WorkdocumentsCaseTabComponent implements OnInit {
     if (!context) {
       return;
     }
-    this.workdocumentsService
-      .getWorkDocuments(
-        context.pluginConfigurationId,
-        context.docDefinition,
-        context.year,
-        context.zaaknummer,
-        PAGE_SIZE,
-        this.nextLink,
-      )
-      .subscribe({
-        next: page => {
-          this.workDocuments = [...this.workDocuments, ...page.documents];
-          this.nextLink = page.nextLink ?? undefined;
-          this.hasMore = !!page.nextLink;
-          this.loading = false;
-          this.loadingMore = false;
-        },
-        error: error => {
-          console.log(error);
-          this.loading = false;
-          this.loadingMore = false;
-          this.error = true;
-        },
-      });
+    this.subscriptions.add(
+      this.workdocumentsService
+        .getWorkDocuments(
+          context.pluginConfigurationId,
+          context.docDefinition,
+          context.year,
+          context.zaaknummer,
+          PAGE_SIZE,
+          this.nextLink,
+        )
+        .subscribe({
+          next: page => {
+            this.workDocuments = [...this.workDocuments, ...page.documents];
+            this.nextLink = page.nextLink ?? undefined;
+            this.hasMore = !!page.nextLink;
+            this.loading = false;
+            this.loadingMore = false;
+          },
+          error: error => {
+            console.log(error);
+            this.loading = false;
+            this.loadingMore = false;
+            this.error = true;
+          },
+        }),
+    );
   }
 }

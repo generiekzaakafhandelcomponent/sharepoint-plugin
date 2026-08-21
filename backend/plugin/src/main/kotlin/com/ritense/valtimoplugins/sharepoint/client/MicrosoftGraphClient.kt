@@ -23,8 +23,12 @@ import com.microsoft.graph.models.Folder
 import com.microsoft.graph.models.odataerrors.ODataError
 import com.microsoft.graph.serviceclient.GraphServiceClient
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.net.URI
+import java.net.URISyntaxException
 
 private val logger = KotlinLogging.logger {}
+
+private const val GRAPH_HOST = "graph.microsoft.com"
 
 data class DriveItemPage(
     val items: List<DriveItem>,
@@ -53,6 +57,9 @@ class MicrosoftGraphClient(
     ): DriveItemPage {
         return try {
             val response = if (nextLink != null) {
+                require(isValidChildrenNextLink(nextLink, driveId)) {
+                    "Invalid nextLink for drive '$driveId'"
+                }
                 ChildrenRequestBuilder(nextLink, graphServiceClient.requestAdapter).get()
             } else {
                 // "root:/Zaakdossiers/besluit/2026/ZAAK-001:" — colon-terminated path addressing
@@ -77,6 +84,30 @@ class MicrosoftGraphClient(
                 throw e
             }
         }
+    }
+
+    /**
+     * Restricts a client-supplied `nextLink` cursor to the children collection of this exact drive,
+     * so it cannot be abused to make the server issue authenticated requests to arbitrary Graph
+     * endpoints, other tenants/sites, or hosts outside Microsoft Graph.
+     */
+    private fun isValidChildrenNextLink(nextLink: String, driveId: String): Boolean {
+        val uri = try {
+            URI(nextLink)
+        } catch (e: URISyntaxException) {
+            return false
+        }
+        if (uri.scheme != "https" || uri.host != GRAPH_HOST) {
+            return false
+        }
+        val segments = uri.path.trim('/').split("/")
+        // expected: {version}/drives/{driveId}/items/{itemId}/children
+        return segments.size == 6 &&
+            (segments[0] == "v1.0" || segments[0] == "beta") &&
+            segments[1] == "drives" &&
+            segments[2] == driveId &&
+            segments[3] == "items" &&
+            segments[5] == "children"
     }
 
     fun getSiteId(hostname: String, sitePath: String): String =
