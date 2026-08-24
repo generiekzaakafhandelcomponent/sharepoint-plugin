@@ -6,14 +6,14 @@
         "formDefinitionName": "start-form-example"
     },
     {
-        "activityId": "time-api-sample-action",
-        "activityType": "bpmn:ServiceTask:start",
-        "processLinkType": "plugin",
-        "pluginDefinitionKey": "sample-plugin",
-        "pluginActionDefinitionKey": "time-api-sample-action",
-        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
-        "actionProperties": {
-            "message": "Hello from the sample plugin!"
-        }
+      "activityId": "create-zaak-folder",
+      "activityType": "bpmn:ServiceTask:start",
+      "processLinkType": "plugin",
+      "pluginDefinitionKey": "sharepoint-plugin",
+      "pluginActionDefinitionKey": "create-zaak-folder",
+      "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+      "actionProperties": {
+        "sharePointZaakFolderProcessVariable": "sharePointFolderLocation"
+      }
     }
-]
+  ]

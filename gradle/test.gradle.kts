@@ -17,7 +17,5 @@
 tasks.named<Test>("test") {
     systemProperty("spring.profiles.include", "inttest,postgresql")
     useJUnitPlatform()
-    doLast {
-        "composeDownForced"
-    }
+    finalizedBy("composeDownForced")
 }

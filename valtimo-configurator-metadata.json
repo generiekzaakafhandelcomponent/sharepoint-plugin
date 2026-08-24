@@ -1,17 +1,17 @@
 {
-    "name": "sample-plugin",
+    "name": "sharepoint-plugin",
     "version": 1,
     "backend": [
         {
-            "import": "com.ritense.valtimoplugins:sample-plugin"
+            "import": "com.ritense.valtimoplugins:sharepoint-plugin"
         }
     ],
     "frontend": {
-        "import": "@valtimo-plugins/sample-plugin",
+        "import": "@valtimo-plugins/sharepoint-plugin",
         "codeAdditions": [
             {
-                "spec": "samplePluginSpecification",
-                "module": "SamplePluginModule"
+                "spec": "sharepointPluginSpecification",
+                "module": "SharePointPluginModule"
             }
         ]
     }

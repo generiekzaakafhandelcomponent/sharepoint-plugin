@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright 2026 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<p *ngIf="sharePointLocation" class="workdocuments-location">
+  <a
+    [href]="sharePointLocation"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="workdocuments-external-link"
+  >
+    {{ 'workDocumentsLocationLinkText' | pluginTranslate: 'sharepoint-plugin' | async }}
+    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
+      <path d="M6.5 3H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.5 2H14v4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 2 7.5 8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+</p>
+
+<p *ngIf="loading">{{ 'workDocumentsLoading' | pluginTranslate: 'sharepoint-plugin' | async }}</p>
+<p *ngIf="error">{{ 'workDocumentsError' | pluginTranslate: 'sharepoint-plugin' | async }}</p>
+
+<ng-container *ngIf="!loading && !error">
+  <p *ngIf="workDocuments.length === 0">{{ 'workDocumentsEmpty' | pluginTranslate: 'sharepoint-plugin' | async }}</p>
+  <table *ngIf="workDocuments.length > 0" class="workdocuments-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>{{ 'workDocumentsNameHeader' | pluginTranslate: 'sharepoint-plugin' | async }}</th>
+        <th>{{ 'workDocumentsSizeHeader' | pluginTranslate: 'sharepoint-plugin' | async }}</th>
+        <th>{{ 'workDocumentsLastModifiedHeader' | pluginTranslate: 'sharepoint-plugin' | async }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let workDocument of workDocuments">
+        <td>
+          <img
+            *ngIf="workDocument.thumbnailUrl; else fileTypeIcon"
+            class="workdocuments-thumbnail"
+            [src]="workDocument.thumbnailUrl"
+            [alt]="workDocument.name"
+          />
+          <ng-template #fileTypeIcon>
+            <span
+              class="workdocuments-file-icon"
+              [style.background]="getFileTypeIcon(workDocument.name).color"
+            >{{ getFileTypeIcon(workDocument.name).label }}</span>
+          </ng-template>
+        </td>
+        <td><a [href]="workDocument.webUrl" target="_blank" rel="noopener noreferrer">{{ workDocument.name }}</a></td>
+        <td>{{ formatFileSize(workDocument.size) }}</td>
+        <td>{{ formatLastModified(workDocument.lastModifiedDateTime) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="workdocuments-footer">
+    <button type="button" cdsButton="primary" size="lg" *ngIf="hasMore" [disabled]="loadingMore" (click)="loadMore()">
+      {{ (loadingMore ? 'workDocumentsLoadingMore' : 'workDocumentsLoadMore') | pluginTranslate: 'sharepoint-plugin' | async }}
+    </button>
+    <button type="button" cdsButton="primary" size="lg" [disabled]="loadingMore" (click)="refresh()">
+      {{ 'workDocumentsRefresh' | pluginTranslate: 'sharepoint-plugin' | async }}
+    </button>
+  </div>
+</ng-container>

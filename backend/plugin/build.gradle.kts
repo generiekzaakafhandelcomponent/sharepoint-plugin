@@ -15,7 +15,7 @@
  */
 
 dockerCompose {
-    setProjectName("sample-plugin")
+    setProjectName("sharepoint-plugin")
     isRequiredBy(project.tasks.test)
 
     tasks.test {
@@ -30,11 +30,21 @@ val operatonVersion: String by project
 
 dependencies {
     compileOnly("com.ritense.valtimo:plugin-valtimo")
+    compileOnly("com.ritense.valtimo:case")
     compileOnly("com.ritense.valtimo:process-document")
+    compileOnly("com.ritense.valtimo:zaken-api")
+    compileOnly("com.ritense.valtimo:value-resolver")
     compileOnly("com.ritense.valtimo:contract")
     compileOnly("org.operaton.bpm:operaton-engine:$operatonVersion")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-security")
+
+    implementation("com.microsoft.graph:microsoft-graph:6.65.0")
+    implementation("com.azure:azure-identity:1.18.4")
+
+    implementation("org.operaton.spin:operaton-spin-dataformat-json-jackson:1.0.3")
+    implementation("org.operaton.bpm:operaton-engine-plugin-spin:1.0.3")
 
     compileOnly("io.github.oshai:kotlin-logging:$kotlinLoggingVersion")
 

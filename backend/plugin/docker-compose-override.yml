@@ -3,4 +3,4 @@ services:
     ports:
       - "54342:5432"
     environment:
-      - POSTGRES_DB=sample-plugin-test
+      - POSTGRES_DB=sharepoint-plugin-test

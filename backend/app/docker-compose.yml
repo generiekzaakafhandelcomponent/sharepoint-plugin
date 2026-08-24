@@ -1,4 +1,4 @@
-name: plugin-docker-compose
+name: sharepoint-plugin
 
 services:
   plugin-keycloak:

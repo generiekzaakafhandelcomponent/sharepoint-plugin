@@ -1,0 +1,15 @@
+[
+    {
+        "id": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "title": "SharePoint plugin (Autodeployed)",
+        "pluginDefinitionKey": "sharepoint-plugin",
+        "properties": {
+            "tenantId": "${TENANT_ID}",
+            "clientId": "${CLIENT_ID}",
+            "clientSecret": "${CLIENT_SECRET}",
+            "hostname": "ritense.sharepoint.com",
+            "sharePointSiteName": "sharepoint-plugin",
+            "baseFolderPath": "zaakdossiers"
+        }
+    }
+]

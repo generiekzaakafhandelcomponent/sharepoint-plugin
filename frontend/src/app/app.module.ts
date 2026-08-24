@@ -98,7 +98,11 @@ import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {environment} from "../environments/environment";
 import {registerDocumentenApiFormioUploadComponent, ZgwModule} from "@valtimo/zgw";
 
-import {SamplePluginModule, samplePluginSpecification,} from "@valtimo-plugins/sample-plugin";
+import {
+  SharePointPluginModule,
+  sharepointPluginSpecification,
+  WorkdocumentsCaseTabComponent,
+} from "@valtimo-plugins/sharepoint-plugin";
 
 export function tabsFactory() {
   return new Map<string, object>([
@@ -106,6 +110,7 @@ export function tabsFactory() {
     [DefaultTabs.progress, CaseDetailTabProgressComponent],
     [DefaultTabs.audit, CaseDetailTabAuditComponent],
     [DefaultTabs.documents, CaseDetailTabDocumentsComponent],
+    ["sharepoint-workdocuments", WorkdocumentsCaseTabComponent],
   ]);
 }
 
@@ -158,7 +163,7 @@ export function tabsFactory() {
     ProcessModule,
     ReactiveFormsModule,
     ResourceModule,
-    SamplePluginModule,
+    SharePointPluginModule,
     SecurityModule,
     SseModule,
     SwaggerModule,
@@ -190,7 +195,7 @@ export function tabsFactory() {
         objecttypenApiPluginSpecification,
         openNotificatiesPluginSpecification,
         openZaakPluginSpecification,
-        samplePluginSpecification,
+        sharepointPluginSpecification,
         zakenApiPluginSpecification,
       ],
     },
