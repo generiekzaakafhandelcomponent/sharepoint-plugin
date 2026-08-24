@@ -19,9 +19,9 @@ package com.ritense.valtimoplugins.sharepoint.service
 import com.microsoft.graph.models.odataerrors.ODataError
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
-import com.ritense.valtimoplugins.sharepoint.service.model.TestConnectionResult
-import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocument
-import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocumentPage
+import com.ritense.valtimoplugins.sharepoint.domain.TestConnectionResult
+import com.ritense.valtimoplugins.sharepoint.domain.WorkDocument
+import com.ritense.valtimoplugins.sharepoint.domain.WorkDocumentPage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.util.concurrent.ConcurrentHashMap

@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimoplugins.sharepoint.service.model
+package com.ritense.valtimoplugins.sharepoint.domain
 
-import java.io.Serializable
-
-data class WorkDocument(
-    val id: String,
-    val name: String,
-    val webUrl: String,
-    val size: Long?,
-    val lastModifiedDateTime: String?,
-    val createdDateTime: String?,
-    val thumbnailUrl: String?,
-) : Serializable {
-    companion object {
-        private const val serialVersionUID: Long = 654128317587487803L
-    }
-}
+data class TestConnectionResult(
+    val success: Boolean,
+    val message: String,
+)

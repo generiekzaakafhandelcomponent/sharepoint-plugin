@@ -21,12 +21,11 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPlugin
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
-import com.ritense.valtimoplugins.sharepoint.service.model.TestConnectionRequest
-import com.ritense.valtimoplugins.sharepoint.service.model.TestConnectionResult
-import com.ritense.valtimoplugins.sharepoint.service.model.WorkDocumentPage
+import com.ritense.valtimoplugins.sharepoint.domain.TestConnectionRequest
+import com.ritense.valtimoplugins.sharepoint.domain.TestConnectionResult
+import com.ritense.valtimoplugins.sharepoint.domain.WorkDocumentPage
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
