@@ -182,7 +182,13 @@ export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
       this.pluginManagementService.getPluginConfigurationsByPluginDefinitionKey("sharepoint-plugin"),
     ]).pipe(
       switchMap(([document, zaak, configurations]) => {
-        const pluginConfigurationId = configurations[0]?.id;
+        if (configurations.length !== 1) {
+          throw new Error(
+            `Expected exactly one SharePoint plugin configuration, found ${configurations.length}. ` +
+              "Cannot determine which one to use for this case.",
+          );
+        }
+        const pluginConfigurationId = configurations[0].id;
         const startdatum = zaak?.startdatum ? new Date(zaak.startdatum) : null;
         if (!pluginConfigurationId || !document?.definitionId.name || !zaak?.identificatie || !startdatum) {
           throw new Error("Missing SharePoint plugin configuration or zaak properties");

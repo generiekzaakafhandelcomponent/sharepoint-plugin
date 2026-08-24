@@ -16,8 +16,6 @@
 
 package com.ritense.valtimoplugins.sharepoint.autoconfiguration
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPluginFactory
@@ -25,10 +23,6 @@ import com.ritense.valtimoplugins.sharepoint.security.SharePointHttpSecurityConf
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.valtimoplugins.sharepoint.web.SharePointResource
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
-import org.operaton.bpm.engine.impl.cfg.ProcessEnginePlugin
-import org.operaton.spin.impl.json.jackson.format.JacksonJsonDataFormat
-import org.operaton.spin.plugin.impl.SpinProcessEnginePlugin
-import org.operaton.spin.spi.DataFormatConfigurator
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
