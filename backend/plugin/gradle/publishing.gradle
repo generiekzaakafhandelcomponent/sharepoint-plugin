@@ -23,13 +23,13 @@ pluginManager.withPlugin("maven-publish") {
                 version = pluginProperties.pluginVersion
 
                 pom {
-                    name = "Sample plugin module"
-                    description = "A module containing a sample plugin"
+                    name = "Sharepoint plugin"
+                    description = "Plugin to integrate with Sharepoint"
                     developers {
                         developer {
-                            id = "team-valtimo"
-                            name = "Team Valtimo"
-                            email = "support@ritense.com"
+                            id = "haiko-ritense"
+                            name = "Haiko van der Schaaf"
+                            email = "haiko.van.der.schaaf@ritense.com"
                         }
                     }
                 }

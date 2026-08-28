@@ -59,7 +59,7 @@ jobs:
         id: claude_review
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_api_key: ${{ secrets.PLUGIN_ANTHROPIC_API_KEY }}
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
           track_progress: true
           claude_args: |
