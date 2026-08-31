@@ -24,6 +24,7 @@ import java.net.InetAddress
 @SpringBootApplication
 class PluginApplication {
     companion object {
+
         private val logger = KotlinLogging.logger {}
 
         @JvmStatic
