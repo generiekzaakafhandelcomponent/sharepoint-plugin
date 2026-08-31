@@ -26,6 +26,7 @@ const sharepointPluginSpecification: PluginSpecification = {
   functionConfigurationComponents: {
     "create-zaak-folder": CreateZaakFolderConfigurationComponent,
   },
+
   pluginTranslations: {
     nl: {
       title: "SharePoint Plugin",

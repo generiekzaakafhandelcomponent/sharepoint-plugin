@@ -40,6 +40,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/v1/plugin/sharepoint")
 class SharePointResource(
+
     private val pluginService: PluginService,
     private val sharePointService: SharePointService,
 ) {
