@@ -105,6 +105,7 @@ import {
 } from "@valtimo-plugins/sharepoint-plugin";
 
 export function tabsFactory() {
+
   return new Map<string, object>([
     [DefaultTabs.summary, CaseDetailTabSummaryComponent],
     [DefaultTabs.progress, CaseDetailTabProgressComponent],
