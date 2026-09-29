@@ -22,6 +22,6 @@
         "name": "Werkdocumenten",
         "key": "workdocuments",
         "type": "custom",
-        "contentKey": "sharepoint-workdocuments"
+        "contentKey": "werkmap"
     }
 ]

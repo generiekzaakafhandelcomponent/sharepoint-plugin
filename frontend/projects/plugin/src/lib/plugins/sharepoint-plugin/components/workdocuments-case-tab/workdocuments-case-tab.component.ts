@@ -30,10 +30,6 @@ interface WorkDocumentsContext {
   zaaknummer: string;
 }
 
-interface DocumentContent {
-  sharePointMap?: string;
-}
-
 interface FileTypeIcon {
   label: string;
   color: string;
@@ -94,9 +90,9 @@ export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.documentService.getDocument(this.documentId).subscribe(document => {
-        const content = document.content as DocumentContent;
-        this.sharePointLocation = content.sharePointMap ?? null;
+      this.workdocumentsService.getSharePointLocation(this.documentId, "/sharePointMap").subscribe({
+        next: location => (this.sharePointLocation = location),
+        error: () => (this.sharePointLocation = null),
       }),
     );
 

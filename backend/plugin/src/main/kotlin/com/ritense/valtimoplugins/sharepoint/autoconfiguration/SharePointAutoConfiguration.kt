@@ -16,6 +16,7 @@
 
 package com.ritense.valtimoplugins.sharepoint.autoconfiguration
 
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPluginFactory
@@ -49,8 +50,9 @@ class SharePointAutoConfiguration {
     fun sharePointResource(
         pluginService: PluginService,
         sharePointService: SharePointService,
+        documentService: DocumentService
 
-    ): SharePointResource = SharePointResource(pluginService, sharePointService)
+    ): SharePointResource = SharePointResource(pluginService, sharePointService, documentService)
 
     @Order(301)
     @Bean

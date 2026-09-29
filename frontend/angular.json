@@ -71,7 +71,8 @@
                             "node_modules/@valtimo/components/assets/css/color.scss",
                             "node_modules/@valtimo/components/assets/css/compatibility.scss",
                             "node_modules/@valtimo/components/assets/css/design-tokens.css",
-                            "node_modules/@valtimo/components/assets/css/formio-carbon.scss"
+                            "node_modules/@valtimo/components/assets/css/formio-carbon.scss",
+                            "node_modules/@carbon/charts-angular/styles.css"
                         ],
                         "scripts": [
                             "node_modules/jquery/dist/jquery.min.js",
