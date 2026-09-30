@@ -2,6 +2,10 @@
 
 Overzicht van wijzigingen per versie van de Sharepoint plugin.
 
+## 1.0.2
+
+Ondersteuning voor Valtimo 13.48.0.
+
 ## 1.0.0
 
 Eerste versie.
