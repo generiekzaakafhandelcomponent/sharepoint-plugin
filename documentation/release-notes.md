@@ -4,4 +4,7 @@ Overzicht van wijzigingen per versie van de Sharepoint plugin.
 
 ## 1.0.0
 
-Eerste versie
+Eerste versie.
+
+## 1.0.1
+Haal locatie sharepoint folder van document property 'sharePointMap' via endpoint backend.

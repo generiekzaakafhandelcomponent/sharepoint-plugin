@@ -33,6 +33,8 @@ class SharePointHttpSecurityConfigurer: HttpSecurityConfigurer {
                 requests
                     .requestMatchers(GET, "/api/v1/plugin/sharepoint/*/work-documents")
                     .hasAuthority(USER)
+                    .requestMatchers(GET, "/api/v1/plugin/sharepoint/documents/*/sharepoint-location")
+                    .hasAuthority(USER)
                     .requestMatchers(POST, "/api/v1/plugin/sharepoint/test-connection")
                     .hasAuthority(ADMIN)
             }

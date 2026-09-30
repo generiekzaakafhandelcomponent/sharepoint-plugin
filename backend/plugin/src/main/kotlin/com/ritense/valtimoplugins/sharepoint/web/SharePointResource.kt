@@ -16,6 +16,9 @@
 
 package com.ritense.valtimoplugins.sharepoint.web
 
+import com.fasterxml.jackson.core.JsonPointer
+import com.ritense.document.exception.DocumentNotFoundException
+import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -43,6 +46,7 @@ class SharePointResource(
 
     private val pluginService: PluginService,
     private val sharePointService: SharePointService,
+    private val documentService: DocumentService,
 ) {
     @GetMapping("/{pluginConfigurationId}/work-documents")
     fun getWorkDocuments(
@@ -71,6 +75,20 @@ class SharePointResource(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
         return ResponseEntity.ok(page)
+    }
+
+    @GetMapping("/documents/{documentId}/sharepoint-location")
+    fun getSharePointLocation(
+        @PathVariable documentId: String
+    ): ResponseEntity<String> {
+        val document = try {
+            documentService.get(documentId)
+        } catch (e: DocumentNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Document not found: $documentId")
+        }
+        val location = document.content().getValueBy(JsonPointer.compile("/sharePointMap"))
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "No value found at path: sharePointMap") }
+        return ResponseEntity.ok(location.asText())
     }
 
     @PostMapping("/test-connection")

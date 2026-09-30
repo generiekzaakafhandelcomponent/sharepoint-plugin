@@ -59,4 +59,11 @@ export class WorkdocumentsService {
       `${this.valtimoEndpointUri}v1/zaken-api/document/${documentId}/zaak`,
     );
   }
+
+  getSharePointLocation(documentId: string): Observable<string> {
+    return this.http.get(
+      `${this.valtimoEndpointUri}v1/plugin/sharepoint/documents/${documentId}/sharepoint-location`,
+      {responseType: "text"}
+    );
+  }
 }
