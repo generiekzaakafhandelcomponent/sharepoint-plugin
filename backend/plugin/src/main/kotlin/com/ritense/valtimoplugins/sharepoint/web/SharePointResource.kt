@@ -17,6 +17,7 @@
 package com.ritense.valtimoplugins.sharepoint.web
 
 import com.fasterxml.jackson.core.JsonPointer
+import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
@@ -80,7 +81,11 @@ class SharePointResource(
     fun getSharePointLocation(
         @PathVariable documentId: String
     ): ResponseEntity<String> {
-        val document = documentService.get(documentId)
+        val document = try {
+            documentService.get(documentId)
+        } catch (e: DocumentNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Document not found: $documentId")
+        }
         val location = document.content().getValueBy(JsonPointer.compile("/sharePointMap"))
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "No value found at path: sharePointMap") }
         return ResponseEntity.ok(location.asText())
