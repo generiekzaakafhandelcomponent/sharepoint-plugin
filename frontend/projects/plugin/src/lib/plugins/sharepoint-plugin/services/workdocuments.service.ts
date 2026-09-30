@@ -60,10 +60,10 @@ export class WorkdocumentsService {
     );
   }
 
-  getSharePointLocation(documentId: string, path: string): Observable<string> {
+  getSharePointLocation(documentId: string): Observable<string> {
     return this.http.get(
       `${this.valtimoEndpointUri}v1/plugin/sharepoint/documents/${documentId}/sharepoint-location`,
-      {params: {path}, responseType: "text"},
+      {responseType: "text"}
     );
   }
 }

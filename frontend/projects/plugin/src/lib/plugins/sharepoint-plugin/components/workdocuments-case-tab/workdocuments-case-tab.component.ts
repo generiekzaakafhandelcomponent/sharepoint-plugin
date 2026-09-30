@@ -90,7 +90,7 @@ export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.workdocumentsService.getSharePointLocation(this.documentId, "/sharePointMap").subscribe({
+      this.workdocumentsService.getSharePointLocation(this.documentId).subscribe({
         next: location => (this.sharePointLocation = location),
         error: () => (this.sharePointLocation = null),
       }),

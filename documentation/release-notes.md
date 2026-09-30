@@ -7,4 +7,4 @@ Overzicht van wijzigingen per versie van de Sharepoint plugin.
 Eerste versie.
 
 ## 1.0.1
-Haal locatie sharepoint folder wanneer er geen document content wordt gedeeld.
+Haal locatie sharepoint folder van document property 'sharePointMap' via endpoint backend.

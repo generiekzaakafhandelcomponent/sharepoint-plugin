@@ -118,7 +118,7 @@ Add a service task to the BPMN process and link it to the `create-zaak-folder` p
 }
 ```
 
-The resulting `sharePointFolderLocation` process variable can then be written onto the case document (for
+The resulting `sharePointFolderLocation` process variable can then be written onto the case document to this value 'sharePointMap' (for
 example via a `camunda:executionListener` calling `valueResolverDelegateService.handleValue(execution,
 "doc:/sharePointMap", sharePointFolderLocation)`), so the case tab described below can show a link to it.
 

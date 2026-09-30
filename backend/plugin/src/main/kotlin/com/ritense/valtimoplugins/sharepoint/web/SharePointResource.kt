@@ -78,12 +78,11 @@ class SharePointResource(
 
     @GetMapping("/documents/{documentId}/sharepoint-location")
     fun getSharePointLocation(
-        @PathVariable documentId: String,
-        @RequestParam path: String,
+        @PathVariable documentId: String
     ): ResponseEntity<String> {
         val document = documentService.get(documentId)
-        val location = document.content().getValueBy(JsonPointer.compile(path))
-            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "No value found at path: $path") }
+        val location = document.content().getValueBy(JsonPointer.compile("/sharePointMap"))
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "No value found at path: sharePointMap") }
         return ResponseEntity.ok(location.asText())
     }
 
