@@ -20,20 +20,32 @@ import {PluginTranslatePipeModule} from "@valtimo/plugin";
 import {FormModule, InputModule as ValtimoInputModule} from "@valtimo/components";
 import {SharePointPluginConfigurationComponent} from "./components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
 import {CreateZaakFolderConfigurationComponent} from "./components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
+import {DeleteWorkDocumentConfigurationComponent} from "./components/delete-work-document-configuration/delete-work-document-configuration.component";
 import {WorkdocumentsCaseTabComponent} from "./components/workdocuments-case-tab/workdocuments-case-tab.component";
 import {CASE_TAB_TOKEN} from "@valtimo/case";
-import {ButtonModule} from "carbon-components-angular";
+import {ButtonModule, ModalModule} from "carbon-components-angular";
+import {DocumentenApiMetadataModalComponent} from "@valtimo/zgw";
 
 @NgModule({
   declarations: [
     SharePointPluginConfigurationComponent,
     CreateZaakFolderConfigurationComponent,
+    DeleteWorkDocumentConfigurationComponent,
     WorkdocumentsCaseTabComponent,
   ],
-  imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule, ButtonModule],
+  imports: [
+    CommonModule,
+    PluginTranslatePipeModule,
+    FormModule,
+    ValtimoInputModule,
+    ButtonModule,
+    ModalModule,
+    DocumentenApiMetadataModalComponent,
+  ],
   exports: [
     SharePointPluginConfigurationComponent,
     CreateZaakFolderConfigurationComponent,
+    DeleteWorkDocumentConfigurationComponent,
     WorkdocumentsCaseTabComponent,
   ],
   providers: [

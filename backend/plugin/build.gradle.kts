@@ -27,14 +27,18 @@ val kotlinLoggingVersion: String by project
 val mockitoKotlinVersion: String by project
 val valtimoVersion: String by project
 val operatonVersion: String by project
+val okhttpVersion: String by project
 
 dependencies {
     compileOnly("com.ritense.valtimo:plugin-valtimo")
     compileOnly("com.ritense.valtimo:case")
     compileOnly("com.ritense.valtimo:process-document")
     compileOnly("com.ritense.valtimo:zaken-api")
+    compileOnly("com.ritense.valtimo:documenten-api")
+    compileOnly("com.ritense.valtimo:temporary-resource-storage")
     compileOnly("com.ritense.valtimo:value-resolver")
     compileOnly("com.ritense.valtimo:contract")
+    compileOnly("com.ritense.valtimo:authorization")
     compileOnly("org.operaton.bpm:operaton-engine:$operatonVersion")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     compileOnly("org.springframework.boot:spring-boot-starter-web")
@@ -51,6 +55,12 @@ dependencies {
     // Testing
     testImplementation("com.ritense.valtimo:plugin-valtimo")
     testImplementation("com.ritense.valtimo:process-document")
+    testImplementation("com.ritense.valtimo:case")
+    testImplementation("com.ritense.valtimo:authorization")
+    testImplementation("com.ritense.valtimo:value-resolver")
+    testImplementation("com.ritense.valtimo:zaken-api")
+    testImplementation("com.ritense.valtimo:documenten-api")
+    testImplementation("com.ritense.valtimo:temporary-resource-storage")
     testImplementation("com.ritense.valtimo:building-block")
     testImplementation("com.ritense.valtimo:local-resource")
     testImplementation("com.ritense.valtimo:test-utils-common")
@@ -61,6 +71,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation("org.mockito:mockito-core")
+    testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
     testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
 
     testImplementation("org.postgresql:postgresql")

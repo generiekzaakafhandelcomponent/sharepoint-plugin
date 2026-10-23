@@ -17,12 +17,16 @@
 package com.ritense.valtimoplugins.sharepoint.client
 
 import com.azure.identity.ClientSecretCredentialBuilder
+import com.microsoft.graph.core.tasks.LargeFileUploadTask
 import com.microsoft.graph.drives.item.items.item.children.ChildrenRequestBuilder
+import com.microsoft.graph.drives.item.items.item.createuploadsession.CreateUploadSessionPostRequestBody
 import com.microsoft.graph.models.DriveItem
+import com.microsoft.graph.models.DriveItemUploadableProperties
 import com.microsoft.graph.models.Folder
 import com.microsoft.graph.models.odataerrors.ODataError
 import com.microsoft.graph.serviceclient.GraphServiceClient
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.io.InputStream
 import java.net.URI
 import java.net.URISyntaxException
 
@@ -55,16 +59,31 @@ class MicrosoftGraphClient(
         pageSize: Int? = null,
         nextLink: String? = null,
     ): DriveItemPage {
+        // "root:/Zaakdossiers/besluit/2026/ZAAK-001:" — colon-terminated path addressing
+        return listChildren(driveId, "root:/${folderPath.trim('/')}:", pageSize, nextLink, folderItemId = null)
+    }
+
+    fun listFolderChildren(
+        driveId: String,
+        folderItemId: String,
+        pageSize: Int? = null,
+        nextLink: String? = null,
+    ): DriveItemPage = listChildren(driveId, folderItemId, pageSize, nextLink, folderItemId)
+
+    private fun listChildren(
+        driveId: String,
+        itemId: String,
+        pageSize: Int?,
+        nextLink: String?,
+        folderItemId: String?,
+    ): DriveItemPage {
         return try {
             val response = if (nextLink != null) {
-                require(isValidChildrenNextLink(nextLink, driveId)) {
+                require(isValidChildrenNextLink(nextLink, driveId, folderItemId)) {
                     "Invalid nextLink for drive '$driveId'"
                 }
                 ChildrenRequestBuilder(nextLink, graphServiceClient.requestAdapter).get()
             } else {
-                // "root:/Zaakdossiers/besluit/2026/ZAAK-001:" — colon-terminated path addressing
-                val itemId = "root:/${folderPath.trim('/')}:"
-
                 graphServiceClient
                     .drives().byDriveId(driveId)
                     .items().byDriveItemId(itemId)
@@ -78,7 +97,7 @@ class MicrosoftGraphClient(
             DriveItemPage(response?.value ?: emptyList(), response?.odataNextLink)
         } catch (e: ODataError) {
             if (e.responseStatusCode == 404) {
-                logger.warn { "SharePoint folder not found at path: $folderPath" }
+                logger.warn { "SharePoint folder not found: $itemId" }
                 DriveItemPage(emptyList(), null)
             } else {
                 throw e
@@ -91,7 +110,7 @@ class MicrosoftGraphClient(
      * so it cannot be abused to make the server issue authenticated requests to arbitrary Graph
      * endpoints, other tenants/sites, or hosts outside Microsoft Graph.
      */
-    private fun isValidChildrenNextLink(nextLink: String, driveId: String): Boolean {
+    private fun isValidChildrenNextLink(nextLink: String, driveId: String, folderItemId: String?): Boolean {
         val uri = try {
             URI(nextLink)
         } catch (e: URISyntaxException) {
@@ -107,6 +126,7 @@ class MicrosoftGraphClient(
             segments[1] == "drives" &&
             segments[2] == driveId &&
             segments[3] == "items" &&
+            (folderItemId == null || segments[4] == folderItemId) &&
             segments[5] == "children"
     }
 
@@ -160,5 +180,64 @@ class MicrosoftGraphClient(
                 throw e
             }
         }
+    }
+
+    fun getItemByPath(driveId: String, path: String): DriveItem? =
+        getItem(driveId, "root:/${path.trim('/')}:")
+
+    fun getItem(driveId: String, itemId: String): DriveItem? {
+        return try {
+            graphServiceClient
+                .drives().byDriveId(driveId)
+                .items().byDriveItemId(itemId)
+                .get()
+        } catch (e: ODataError) {
+            if (e.responseStatusCode == 404) null else throw e
+        }
+    }
+
+    fun downloadContent(driveId: String, itemId: String): InputStream =
+        requireNotNull(
+            graphServiceClient
+                .drives().byDriveId(driveId)
+                .items().byDriveItemId(itemId)
+                .content().get()
+        ) { "No content for SharePoint item $itemId" }
+
+    fun deleteItem(driveId: String, itemId: String) {
+        graphServiceClient
+            .drives().byDriveId(driveId)
+            .items().byDriveItemId(itemId)
+            .delete()
+    }
+
+    fun uploadFile(
+        driveId: String,
+        folderItemId: String,
+        fileName: String,
+        content: InputStream,
+        size: Long,
+    ): DriveItem {
+        val sessionRequest = CreateUploadSessionPostRequestBody().apply {
+            item = DriveItemUploadableProperties().apply {
+                additionalData = mutableMapOf<String, Any>("@microsoft.graph.conflictBehavior" to "rename")
+            }
+        }
+        val uploadSession = requireNotNull(
+            graphServiceClient
+                .drives().byDriveId(driveId)
+                .items().byDriveItemId("$folderItemId:/$fileName:")
+                .createUploadSession().post(sessionRequest)
+        ) { "SharePoint did not open an upload session for '$fileName'" }
+
+        val result = LargeFileUploadTask(
+            graphServiceClient.requestAdapter,
+            uploadSession,
+            content,
+            size,
+            DriveItem::createFromDiscriminatorValue,
+        ).upload()
+        check(result.isUploadSuccessful) { "Upload of '$fileName' to SharePoint did not complete" }
+        return requireNotNull(result.itemResponse) { "SharePoint returned no item for '$fileName'" }
     }
 }

@@ -21,6 +21,7 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -32,6 +33,14 @@ class SharePointHttpSecurityConfigurer: HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests
                     .requestMatchers(GET, "/api/v1/plugin/sharepoint/*/work-documents")
+                    .hasAuthority(USER)
+                    .requestMatchers(GET, "/api/v1/plugin/sharepoint/*/documents/*/work-documents")
+                    .hasAuthority(USER)
+                    .requestMatchers(POST, "/api/v1/plugin/sharepoint/*/documents/*/work-documents")
+                    .hasAuthority(USER)
+                    .requestMatchers(POST, "/api/v1/plugin/sharepoint/*/documents/*/work-documents/*/documenten-api")
+                    .hasAuthority(USER)
+                    .requestMatchers(DELETE, "/api/v1/plugin/sharepoint/*/documents/*/work-documents/*")
                     .hasAuthority(USER)
                     .requestMatchers(GET, "/api/v1/plugin/sharepoint/documents/*/sharepoint-location")
                     .hasAuthority(USER)

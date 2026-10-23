@@ -2,7 +2,8 @@
 
 A Valtimo plugin that integrates with Microsoft SharePoint for zaak work document management. It creates a
 dedicated SharePoint folder for a zaak from a BPMN process, and adds a "Werkdocumenten" case tab that lists
-the work documents in that folder via the Microsoft Graph API.
+the work documents in that folder via the Microsoft Graph API, and moves documents between that folder and the
+Documenten API.
 
 ## Getting started
 

@@ -18,6 +18,7 @@ import {PluginSpecification} from "@valtimo/plugin";
 import {SharePointPluginConfigurationComponent} from "./components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
 import {SHAREPOINT_PLUGIN_LOGO_BASE64} from "./assets";
 import {CreateZaakFolderConfigurationComponent} from "./components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
+import {DeleteWorkDocumentConfigurationComponent} from "./components/delete-work-document-configuration/delete-work-document-configuration.component";
 
 const sharepointPluginSpecification: PluginSpecification = {
   pluginId: "sharepoint-plugin",
@@ -25,6 +26,7 @@ const sharepointPluginSpecification: PluginSpecification = {
   pluginLogoBase64: SHAREPOINT_PLUGIN_LOGO_BASE64,
   functionConfigurationComponents: {
     "create-zaak-folder": CreateZaakFolderConfigurationComponent,
+    "delete-work-document": DeleteWorkDocumentConfigurationComponent,
   },
 
   pluginTranslations: {
@@ -42,6 +44,10 @@ const sharepointPluginSpecification: PluginSpecification = {
       createZaakFolderDescription:
         "Maakt automatisch een map aan in SharePoint voor de werkdocumenten van de zaak.",
       sharePointZaakFolderProcessVariable: "Process variable met sharepointlocatie",
+      "delete-work-document": "Verwijder document uit SharePoint",
+      deleteWorkDocumentDescription:
+        "Verwijdert het document met deze bestandsnaam uit de SharePoint-map van de zaak. Gebruik bijvoorbeeld pv:bestandsnaam om de naam uit een formulier over te nemen.",
+      fileName: "Bestandsnaam",
       workDocumentsNameHeader: "Naam",
       workDocumentsSizeHeader: "Grootte",
       workDocumentsLastModifiedHeader: "Laatst gewijzigd",
@@ -52,6 +58,26 @@ const sharepointPluginSpecification: PluginSpecification = {
       workDocumentsLoadMore: "Meer laden",
       workDocumentsLoadingMore: "Laden...",
       workDocumentsRefresh: "Vernieuwen",
+      workDocumentsUploadFromDocumentenApi: "Upload uit Documenten API",
+      workDocumentsUploadToSharePoint: "Naar SharePoint",
+      workDocumentsUploading: "Uploaden...",
+      workDocumentsPickerLoading: "Documenten van de zaak laden...",
+      workDocumentsPickerError: "De documenten van de zaak konden niet worden geladen.",
+      workDocumentsPickerEmpty: "Deze zaak heeft geen documenten in de Documenten API.",
+      workDocumentsUploaded: "Geüpload naar SharePoint:",
+      workDocumentsUploadError: "Uploaden naar SharePoint is mislukt:",
+      workDocumentsStore: "Opslaan in Documenten API",
+      workDocumentsStored: "Opgeslagen in de Documenten API en verwijderd uit SharePoint:",
+      workDocumentsStoredNotRemoved:
+        "Opgeslagen in de Documenten API, maar SharePoint kon het bestand niet verwijderen. Sla het niet opnieuw op en verwijder het later:",
+      workDocumentsNotStoredYet: "Nog niet opgeslagen in de Documenten API; het bestand blijft in SharePoint:",
+      workDocumentsStoreError: "Opslaan in de Documenten API is mislukt; het bestand blijft in SharePoint:",
+      workDocumentsDelete: "Verwijderen",
+      workDocumentsDeleteConfirmTitle: "Document verwijderen uit SharePoint",
+      workDocumentsDeleteConfirm: "Weet je zeker dat je dit document uit SharePoint wilt verwijderen?",
+      workDocumentsDeleted: "Verwijderd uit SharePoint:",
+      workDocumentsDeleteError: "SharePoint kon dit document niet verwijderen:",
+      workDocumentsCancel: "Annuleren",
       testConnection: "Test verbinding",
       testingConnection: "Verbinding testen...",
     },
@@ -69,6 +95,10 @@ const sharepointPluginSpecification: PluginSpecification = {
       createZaakFolderDescription:
         "Automatically creates a folder in SharePoint for the case's work documents.",
       sharePointZaakFolderProcessVariable: "Process variable with sharepointlocation",
+      "delete-work-document": "Delete document from SharePoint",
+      deleteWorkDocumentDescription:
+        "Deletes the document with this file name from the case's SharePoint folder. Use for example pv:fileName to take the name from a form.",
+      fileName: "File name",
       workDocumentsNameHeader: "Name",
       workDocumentsSizeHeader: "Size",
       workDocumentsLastModifiedHeader: "Last modified",
@@ -79,6 +109,26 @@ const sharepointPluginSpecification: PluginSpecification = {
       workDocumentsLoadMore: "Load more",
       workDocumentsLoadingMore: "Loading...",
       workDocumentsRefresh: "Refresh",
+      workDocumentsUploadFromDocumentenApi: "Upload from Documenten API",
+      workDocumentsUploadToSharePoint: "To SharePoint",
+      workDocumentsUploading: "Uploading...",
+      workDocumentsPickerLoading: "Loading the case's documents...",
+      workDocumentsPickerError: "Could not load the case's documents.",
+      workDocumentsPickerEmpty: "This case has no documents in the Documenten API.",
+      workDocumentsUploaded: "Uploaded to SharePoint:",
+      workDocumentsUploadError: "Uploading to SharePoint failed:",
+      workDocumentsStore: "Store in Documenten API",
+      workDocumentsStored: "Stored in the Documenten API and removed from SharePoint:",
+      workDocumentsStoredNotRemoved:
+        "Stored in the Documenten API, but SharePoint could not remove the file. Do not store it again; delete it later:",
+      workDocumentsNotStoredYet: "Not stored in the Documenten API yet; the file stays in SharePoint:",
+      workDocumentsStoreError: "Storing in the Documenten API failed; the file stays in SharePoint:",
+      workDocumentsDelete: "Delete",
+      workDocumentsDeleteConfirmTitle: "Delete document from SharePoint",
+      workDocumentsDeleteConfirm: "Are you sure you want to delete this document from SharePoint?",
+      workDocumentsDeleted: "Deleted from SharePoint:",
+      workDocumentsDeleteError: "SharePoint could not delete this document:",
+      workDocumentsCancel: "Cancel",
       testConnection: "Test connection",
       testingConnection: "Testing connection...",
     },

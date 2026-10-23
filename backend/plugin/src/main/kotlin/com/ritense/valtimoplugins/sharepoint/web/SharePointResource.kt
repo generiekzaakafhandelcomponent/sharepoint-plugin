@@ -17,6 +17,7 @@
 package com.ritense.valtimoplugins.sharepoint.web
 
 import com.fasterxml.jackson.core.JsonPointer
+import com.microsoft.graph.models.odataerrors.ODataError
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -24,11 +25,18 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.sharepoint.plugin.SharePointPlugin
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
+import com.ritense.valtimoplugins.sharepoint.domain.StoreInDocumentenApiRequest
+import com.ritense.valtimoplugins.sharepoint.domain.StoreInDocumentenApiResult
 import com.ritense.valtimoplugins.sharepoint.domain.TestConnectionRequest
 import com.ritense.valtimoplugins.sharepoint.domain.TestConnectionResult
+import com.ritense.valtimoplugins.sharepoint.domain.UploadFromDocumentenApiRequest
+import com.ritense.valtimoplugins.sharepoint.domain.WorkDocument
+import com.ritense.valtimoplugins.sharepoint.domain.WorkDocumentNotFoundException
 import com.ritense.valtimoplugins.sharepoint.domain.WorkDocumentPage
+import com.ritense.valtimoplugins.sharepoint.service.SharePointCaseService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -47,7 +55,9 @@ class SharePointResource(
     private val pluginService: PluginService,
     private val sharePointService: SharePointService,
     private val documentService: DocumentService,
+    private val sharePointCaseService: SharePointCaseService,
 ) {
+    @Deprecated("Takes the folder from the browser; use the case-scoped documents/{documentId}/work-documents")
     @GetMapping("/{pluginConfigurationId}/work-documents")
     fun getWorkDocuments(
         @PathVariable pluginConfigurationId: UUID,
@@ -77,6 +87,47 @@ class SharePointResource(
         return ResponseEntity.ok(page)
     }
 
+    @GetMapping("/{pluginConfigurationId}/documents/{documentId}/work-documents")
+    fun getCaseWorkDocuments(
+        @PathVariable pluginConfigurationId: UUID,
+        @PathVariable documentId: UUID,
+        @RequestParam(required = false) pageSize: Int?,
+        @RequestParam(required = false) nextLink: String?,
+    ): ResponseEntity<WorkDocumentPage> = handleErrors {
+        ResponseEntity.ok(sharePointCaseService.listWorkDocuments(pluginConfigurationId, documentId, pageSize, nextLink))
+    }
+
+    @PostMapping("/{pluginConfigurationId}/documents/{documentId}/work-documents")
+    fun uploadFromDocumentenApi(
+        @PathVariable pluginConfigurationId: UUID,
+        @PathVariable documentId: UUID,
+        @RequestBody request: UploadFromDocumentenApiRequest,
+    ): ResponseEntity<WorkDocument> = handleErrors {
+        ResponseEntity.ok(sharePointCaseService.uploadFromDocumentenApi(pluginConfigurationId, documentId, request))
+    }
+
+    @PostMapping("/{pluginConfigurationId}/documents/{documentId}/work-documents/{itemId}/documenten-api")
+    fun storeInDocumentenApi(
+        @PathVariable pluginConfigurationId: UUID,
+        @PathVariable documentId: UUID,
+        @PathVariable itemId: String,
+        @RequestBody request: StoreInDocumentenApiRequest,
+    ): ResponseEntity<StoreInDocumentenApiResult> = handleErrors {
+        ResponseEntity.ok(
+            sharePointCaseService.storeInDocumentenApi(pluginConfigurationId, documentId, itemId, request.metadata)
+        )
+    }
+
+    @DeleteMapping("/{pluginConfigurationId}/documents/{documentId}/work-documents/{itemId}")
+    fun deleteWorkDocument(
+        @PathVariable pluginConfigurationId: UUID,
+        @PathVariable documentId: UUID,
+        @PathVariable itemId: String,
+    ): ResponseEntity<Unit> = handleErrors {
+        sharePointCaseService.deleteWorkDocument(pluginConfigurationId, documentId, itemId)
+        ResponseEntity.noContent().build()
+    }
+
     @GetMapping("/documents/{documentId}/sharepoint-location")
     fun getSharePointLocation(
         @PathVariable documentId: String
@@ -102,5 +153,25 @@ class SharePointResource(
             baseFolderPath = request.baseFolderPath,
         )
         return ResponseEntity.ok(result)
+    }
+
+    private fun <T> handleErrors(block: () -> ResponseEntity<T>): ResponseEntity<T> {
+        return try {
+            block()
+        } catch (e: DocumentNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        } catch (e: WorkDocumentNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        } catch (e: IllegalArgumentException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: IllegalStateException) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, e.message)
+        } catch (e: ODataError) {
+            // Graph's 401 and 403 concern the app registration, not the user's session
+            val status = HttpStatus.resolve(e.responseStatusCode)
+                ?.takeIf { it.is4xxClientError && it != HttpStatus.UNAUTHORIZED && it != HttpStatus.FORBIDDEN }
+                ?: HttpStatus.BAD_GATEWAY
+            throw ResponseStatusException(status, "SharePoint refused the request: ${e.error?.message ?: e.responseStatusCode}")
+        }
     }
 }

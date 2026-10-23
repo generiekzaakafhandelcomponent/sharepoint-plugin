@@ -26,6 +26,7 @@ import com.ritense.processdocument.domain.impl.OperatonProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimoplugins.sharepoint.client.MicrosoftGraphClient
+import com.ritense.valtimoplugins.sharepoint.domain.ZaakFolderLocation
 import com.ritense.valtimoplugins.sharepoint.service.SharePointService
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -88,27 +89,42 @@ open class SharePointPlugin(
         execution: DelegateExecution,
         @PluginActionProperty sharePointZaakFolderProcessVariable: String,
     ) {
-        val documentId = execution.businessKey
-        val zaakNr = zaakValueResolverFactory.createResolver(documentId).apply("identificatie")
+        val folder = zaakFolderLocation(execution)
 
-        logger.info { "Creating SharePoint folder for zaak: $zaakNr" }
-
-        val document =
-            processDocumentService.getDocument(
-                OperatonProcessInstanceId(execution.processInstanceId),
-                execution
-            )
-
-        val yearVar = document.createdOn().year.toString()
+        logger.info { "Creating SharePoint folder for zaak: ${folder.zaaknummer}" }
 
         val location = sharePointService.createZaakFolder(
             graphClient = microsoftGraphClient,
             driveId = driveId,
-            dossierDefinitionName = document.definitionId().name(),
-            year = yearVar,
-            zaaknummer = zaakNr as String,
+            dossierDefinitionName = folder.dossierDefinitionName,
+            year = folder.year,
+            zaaknummer = folder.zaaknummer,
         )
 
         execution.setVariable(sharePointZaakFolderProcessVariable, location)
+    }
+
+    @PluginAction(
+        key = "delete-work-document",
+        title = "Verwijder document uit SharePoint",
+        description = "Verwijdert een document uit de SharePoint-map van de zaak.",
+        activityTypes = [SERVICE_TASK_START],
+    )
+    open fun deleteWorkDocument(
+        execution: DelegateExecution,
+        @PluginActionProperty fileName: String,
+    ) {
+        val folder = zaakFolderLocation(execution)
+        logger.info { "Deleting '$fileName' from the SharePoint folder of zaak: ${folder.zaaknummer}" }
+        sharePointService.deleteZaakWorkDocumentByName(microsoftGraphClient, driveId, folder, fileName)
+    }
+
+    private fun zaakFolderLocation(execution: DelegateExecution): ZaakFolderLocation {
+        val zaakNr = zaakValueResolverFactory.createResolver(execution.businessKey).apply("identificatie")
+        val document = processDocumentService.getDocument(
+            OperatonProcessInstanceId(execution.processInstanceId),
+            execution
+        )
+        return ZaakFolderLocation.of(document, zaakNr as String)
     }
 }

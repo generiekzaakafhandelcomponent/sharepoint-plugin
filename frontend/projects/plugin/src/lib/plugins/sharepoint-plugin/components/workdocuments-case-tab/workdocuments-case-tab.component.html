@@ -29,6 +29,10 @@
   </a>
 </p>
 
+<p *ngIf="message" role="alert" class="workdocuments-message" [ngClass]="'workdocuments-message-' + message.type">
+  {{ message.translationKey | pluginTranslate: 'sharepoint-plugin' | async }} {{ message.fileName }}
+</p>
+
 <p *ngIf="loading">{{ 'workDocumentsLoading' | pluginTranslate: 'sharepoint-plugin' | async }}</p>
 <p *ngIf="error">{{ 'workDocumentsError' | pluginTranslate: 'sharepoint-plugin' | async }}</p>
 
@@ -41,6 +45,7 @@
         <th>{{ 'workDocumentsNameHeader' | pluginTranslate: 'sharepoint-plugin' | async }}</th>
         <th>{{ 'workDocumentsSizeHeader' | pluginTranslate: 'sharepoint-plugin' | async }}</th>
         <th>{{ 'workDocumentsLastModifiedHeader' | pluginTranslate: 'sharepoint-plugin' | async }}</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -62,11 +67,22 @@
         <td><a [href]="workDocument.webUrl" target="_blank" rel="noopener noreferrer">{{ workDocument.name }}</a></td>
         <td>{{ formatFileSize(workDocument.size) }}</td>
         <td>{{ formatLastModified(workDocument.lastModifiedDateTime) }}</td>
+        <td class="workdocuments-actions">
+          <button type="button" cdsButton="ghost" size="sm" class="workdocuments-store" (click)="openStore(workDocument)">
+            {{ 'workDocumentsStore' | pluginTranslate: 'sharepoint-plugin' | async }}
+          </button>
+          <button type="button" cdsButton="danger--ghost" size="sm" class="workdocuments-delete" (click)="confirmDelete(workDocument)">
+            {{ 'workDocumentsDelete' | pluginTranslate: 'sharepoint-plugin' | async }}
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
 
   <div class="workdocuments-footer">
+    <button type="button" cdsButton="secondary" size="lg" class="workdocuments-open-picker" (click)="openPicker()">
+      {{ 'workDocumentsUploadFromDocumentenApi' | pluginTranslate: 'sharepoint-plugin' | async }}
+    </button>
     <button type="button" cdsButton="primary" size="lg" *ngIf="hasMore" [disabled]="loadingMore" (click)="loadMore()">
       {{ (loadingMore ? 'workDocumentsLoadingMore' : 'workDocumentsLoadMore') | pluginTranslate: 'sharepoint-plugin' | async }}
     </button>
@@ -75,3 +91,78 @@
     </button>
   </div>
 </ng-container>
+
+<cds-modal [open]="pickerOpen" (overlaySelected)="closePicker()">
+  <cds-modal-header (closeSelect)="closePicker()">
+    <h3 cdsModalHeaderHeading>{{ 'workDocumentsUploadFromDocumentenApi' | pluginTranslate: 'sharepoint-plugin' | async }}</h3>
+  </cds-modal-header>
+  <section cdsModalContent>
+    <p *ngIf="pickerLoading">{{ 'workDocumentsPickerLoading' | pluginTranslate: 'sharepoint-plugin' | async }}</p>
+    <p *ngIf="pickerError">{{ 'workDocumentsPickerError' | pluginTranslate: 'sharepoint-plugin' | async }}</p>
+    <p *ngIf="!pickerLoading && !pickerError && zaakDocuments.length === 0">
+      {{ 'workDocumentsPickerEmpty' | pluginTranslate: 'sharepoint-plugin' | async }}
+    </p>
+    <table *ngIf="!pickerLoading && zaakDocuments.length > 0" class="workdocuments-table">
+      <tbody>
+        <tr *ngFor="let zaakDocument of zaakDocuments">
+          <td>{{ zaakDocument.fileName || zaakDocument.title }}</td>
+          <td class="workdocuments-actions">
+            <button
+              type="button"
+              cdsButton="primary"
+              size="sm"
+              class="workdocuments-upload"
+              [disabled]="!!uploadingFileId"
+              (click)="uploadToSharePoint(zaakDocument)"
+            >
+              {{ (uploadingFileId === zaakDocument.fileId ? 'workDocumentsUploading' : 'workDocumentsUploadToSharePoint') | pluginTranslate: 'sharepoint-plugin' | async }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+  <cds-modal-footer>
+    <button type="button" cdsButton="secondary" (click)="closePicker()">
+      {{ 'workDocumentsCancel' | pluginTranslate: 'sharepoint-plugin' | async }}
+    </button>
+  </cds-modal-footer>
+</cds-modal>
+
+<cds-modal [open]="!!deleteItem" (overlaySelected)="cancelDelete()">
+  <cds-modal-header (closeSelect)="cancelDelete()">
+    <h3 cdsModalHeaderHeading>{{ 'workDocumentsDeleteConfirmTitle' | pluginTranslate: 'sharepoint-plugin' | async }}</h3>
+  </cds-modal-header>
+  <section cdsModalContent>
+    <p>{{ 'workDocumentsDeleteConfirm' | pluginTranslate: 'sharepoint-plugin' | async }} {{ deleteItem?.name }}</p>
+  </section>
+  <cds-modal-footer>
+    <button type="button" cdsButton="secondary" [disabled]="deleting" (click)="cancelDelete()">
+      {{ 'workDocumentsCancel' | pluginTranslate: 'sharepoint-plugin' | async }}
+    </button>
+    <button type="button" cdsButton="danger" class="workdocuments-delete-confirm" [disabled]="deleting" (click)="deleteWorkDocument()">
+      {{ 'workDocumentsDelete' | pluginTranslate: 'sharepoint-plugin' | async }}
+    </button>
+  </cds-modal-footer>
+</cds-modal>
+
+<valtimo-documenten-api-metadata-modal
+  [defaultValues]="uploadSettings?.defaultValues ?? {}"
+  [disableAuthor]="isReadonly('auteur')"
+  [disableConfidentialityLevel]="isReadonly('vertrouwelijkheidaanduiding')"
+  [disableCreationDate]="isReadonly('creatiedatum')"
+  [disableDescription]="isReadonly('beschrijving')"
+  [disableDocumentTitle]="isReadonly('titel')"
+  [disableDocumentType]="isReadonly('informatieobjecttype')"
+  [disableFilename]="isReadonly('bestandsnaam')"
+  [disableLanguage]="isReadonly('taal')"
+  [disableStatus]="isReadonly('status')"
+  [hideFields]="uploadSettings?.hideFields ?? []"
+  [supportsTrefwoorden]="!!uploadSettings?.supportsTrefwoorden"
+  [disabled$]="storeModalDisabled$"
+  [file$]="storeFile$"
+  [open]="!!storeItem"
+  [uploading]="storing"
+  (metadata)="storeInDocumentenApi($event)"
+  (modalClose)="closeStore()"
+></valtimo-documenten-api-metadata-modal>

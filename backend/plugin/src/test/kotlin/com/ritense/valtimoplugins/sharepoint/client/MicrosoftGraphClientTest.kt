@@ -16,6 +16,7 @@
 
 package com.ritense.valtimoplugins.sharepoint.client
 
+import com.microsoft.graph.drives.item.items.item.createuploadsession.CreateUploadSessionPostRequestBody
 import com.microsoft.graph.models.DriveItem
 import com.microsoft.graph.models.odataerrors.ODataError
 import com.microsoft.graph.serviceclient.GraphServiceClient
@@ -24,8 +25,11 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Answers
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.io.ByteArrayInputStream
 
 private class TestODataError(statusCode: Int) : ODataError() {
     init {
@@ -117,5 +121,31 @@ internal class MicrosoftGraphClientTest {
                 nextLink = "https://graph.microsoft.com/v1.0/me",
             )
         }
+    }
+
+    @Test
+    fun `listFolderChildren rejects a nextLink that pages another folder of the same drive`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            client.listFolderChildren(
+                driveId = "drive-1",
+                folderItemId = "folder-1",
+                nextLink = "https://graph.microsoft.com/v1.0/drives/drive-1/items/other-folder/children?\$skiptoken=x",
+            )
+        }
+    }
+
+    @Test
+    fun `uploadFile asks SharePoint to keep both files on a name conflict`() {
+        val createUploadSession = graphServiceClient.drives().byDriveId(any()).items().byDriveItemId(any())
+            .createUploadSession()
+        whenever(createUploadSession.post(any())).thenThrow(TestODataError(500))
+
+        assertThrows(ODataError::class.java) {
+            client.uploadFile("drive-1", "folder-1", "brief.docx", ByteArrayInputStream(ByteArray(1)), 1)
+        }
+
+        val body = argumentCaptor<CreateUploadSessionPostRequestBody>()
+        verify(createUploadSession).post(body.capture())
+        assertEquals("rename", body.firstValue.item?.additionalData?.get("@microsoft.graph.conflictBehavior"))
     }
 }

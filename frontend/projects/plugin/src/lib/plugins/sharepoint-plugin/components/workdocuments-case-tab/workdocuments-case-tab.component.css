@@ -46,3 +46,20 @@
   gap: 1rem;
   margin-top: 1rem;
 }
+
+.workdocuments-actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.workdocuments-message-success {
+  color: #198038;
+}
+
+.workdocuments-message-warning {
+  color: #8e6a00;
+}
+
+.workdocuments-message-error {
+  color: #da1e28;
+}

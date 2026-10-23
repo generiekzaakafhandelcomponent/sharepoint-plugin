@@ -14,20 +14,37 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
-import {DocumentService} from "@valtimo/document";
 import {PluginManagementService} from "@valtimo/plugin";
+import {DocumentenApiDocumentService, DocumentenApiMetadata, DocumentenApiVersionService} from "@valtimo/zgw";
 import {TranslateService} from "@ngx-translate/core";
-import {combineLatest, Observable, of, Subscription, switchMap} from "rxjs";
+import {BehaviorSubject, combineLatest, map, Observable, of, Subscription} from "rxjs";
 import {WorkdocumentsService} from "../../services/workdocuments.service";
-import {WorkDocument} from "../../models";
+import {StoreInDocumentenApiResult, WorkDocument, ZaakDocument} from "../../models";
 
 interface WorkDocumentsContext {
   pluginConfigurationId: string;
-  docDefinition: string;
-  year: string;
-  zaaknummer: string;
+}
+
+interface UploadField {
+  key: string;
+  defaultValue?: string;
+  visible?: boolean;
+  readonly?: boolean;
+}
+
+interface UploadSettings {
+  defaultValues: Record<string, string | string[] | undefined>;
+  hideFields: string[];
+  readonlyFields: string[];
+  supportsTrefwoorden: boolean;
+}
+
+interface TabMessage {
+  type: "success" | "warning" | "error";
+  translationKey: string;
+  fileName: string;
 }
 
 interface FileTypeIcon {
@@ -77,18 +94,43 @@ export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
   error = false;
   hasMore = false;
   sharePointLocation: string | null = null;
+  message: TabMessage | null = null;
+
+  pickerOpen = false;
+  pickerLoading = false;
+  pickerError = false;
+  zaakDocuments: ZaakDocument[] = [];
+  uploadingFileId: string | null = null;
+
+  storeItem: WorkDocument | null = null;
+  readonly storeFile$ = new BehaviorSubject<{name: string} | null>(null);
+  readonly storeModalDisabled$ = of(false);
+  storing = false;
+  uploadSettings: UploadSettings | null = null;
+
+  deleteItem: WorkDocument | null = null;
+  deleting = false;
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly documentService: DocumentService,
     private readonly pluginManagementService: PluginManagementService,
     private readonly workdocumentsService: WorkdocumentsService,
     private readonly translateService: TranslateService,
+    private readonly documentenApiDocumentService: DocumentenApiDocumentService,
+    private readonly documentenApiVersionService: DocumentenApiVersionService,
+    private readonly changeDetectorRef: ChangeDetectorRef,
   ) {
     this.documentId = this.route.snapshot.paramMap.get("documentId") || "";
   }
 
   ngOnInit(): void {
+    this.subscriptions.add(
+      this.loadUploadSettings().subscribe({
+        next: settings => (this.uploadSettings = settings),
+        error: () => (this.uploadSettings = null),
+      }),
+    );
+
     this.subscriptions.add(
       this.workdocumentsService.getSharePointLocation(this.documentId).subscribe({
         next: location => (this.sharePointLocation = location),
@@ -135,6 +177,145 @@ export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
     this.loadPage();
   }
 
+  openPicker(): void {
+    this.pickerOpen = true;
+    this.pickerLoading = true;
+    this.pickerError = false;
+    this.subscriptions.add(
+      this.workdocumentsService.getZaakDocuments(this.documentId).subscribe({
+        next: documents => {
+          this.zaakDocuments = documents.filter(document => document.canView !== false);
+          this.pickerLoading = false;
+        },
+        error: () => {
+          this.pickerLoading = false;
+          this.pickerError = true;
+        },
+      }),
+    );
+  }
+
+  closePicker(): void {
+    this.pickerOpen = false;
+  }
+
+  uploadToSharePoint(zaakDocument: ZaakDocument): void {
+    const context = this.context;
+    if (!context || this.uploadingFileId) {
+      return;
+    }
+    const fileName = zaakDocument.fileName || zaakDocument.title || "";
+    this.uploadingFileId = zaakDocument.fileId;
+    this.subscriptions.add(
+      this.workdocumentsService
+        .uploadFromDocumentenApi(context.pluginConfigurationId, this.documentId, zaakDocument)
+        .subscribe({
+          next: workDocument => {
+            this.uploadingFileId = null;
+            this.pickerOpen = false;
+            this.message = {type: "success", translationKey: "workDocumentsUploaded", fileName: workDocument.name};
+            this.refresh();
+          },
+          error: () => {
+            this.uploadingFileId = null;
+            this.pickerOpen = false;
+            this.message = {type: "error", translationKey: "workDocumentsUploadError", fileName};
+          },
+        }),
+    );
+  }
+
+  openStore(workDocument: WorkDocument): void {
+    // The dialog reads the case's upload-field settings when the file arrives, so they load first
+    const settings$ = this.uploadSettings ? of(this.uploadSettings) : this.loadUploadSettings();
+    this.subscriptions.add(
+      settings$.subscribe({
+        next: settings => {
+          this.uploadSettings = settings;
+          // The dialog prefills as soon as the file arrives, so the settings must be bound to it first
+          this.changeDetectorRef.detectChanges();
+          this.storeItem = workDocument;
+          this.storeFile$.next({name: workDocument.name});
+        },
+        error: () => {
+          this.message = {type: "error", translationKey: "workDocumentsStoreError", fileName: workDocument.name};
+        },
+      }),
+    );
+  }
+
+  isReadonly(field: string): boolean {
+    return !!this.uploadSettings?.readonlyFields.includes(field);
+  }
+
+  closeStore(): void {
+    if (!this.storing) {
+      this.storeItem = null;
+    }
+  }
+
+  storeInDocumentenApi(metadata: DocumentenApiMetadata): void {
+    const context = this.context;
+    const workDocument = this.storeItem;
+    if (!context || !workDocument || this.storing) {
+      return;
+    }
+    this.storing = true;
+    this.subscriptions.add(
+      this.workdocumentsService
+        .storeInDocumentenApi(context.pluginConfigurationId, this.documentId, workDocument.id, this.toMetadataValues(metadata))
+        .subscribe({
+          next: result => {
+            this.storing = false;
+            this.storeItem = null;
+            this.message = this.storeResultMessage(result, workDocument.name);
+            this.refresh();
+          },
+          error: () => {
+            this.storing = false;
+            this.storeItem = null;
+            this.message = {type: "error", translationKey: "workDocumentsStoreError", fileName: workDocument.name};
+          },
+        }),
+    );
+  }
+
+  confirmDelete(workDocument: WorkDocument): void {
+    this.deleteItem = workDocument;
+  }
+
+  cancelDelete(): void {
+    if (!this.deleting) {
+      this.deleteItem = null;
+    }
+  }
+
+  deleteWorkDocument(): void {
+    const context = this.context;
+    const workDocument = this.deleteItem;
+    if (!context || !workDocument || this.deleting) {
+      return;
+    }
+    this.deleting = true;
+    this.subscriptions.add(
+      this.workdocumentsService
+        .deleteWorkDocument(context.pluginConfigurationId, this.documentId, workDocument.id)
+        .subscribe({
+          next: () => {
+            this.deleting = false;
+            this.deleteItem = null;
+            this.workDocuments = this.workDocuments.filter(document => document.id !== workDocument.id);
+            this.message = {type: "success", translationKey: "workDocumentsDeleted", fileName: workDocument.name};
+          },
+          error: () => {
+            this.deleting = false;
+            this.deleteItem = null;
+            this.message = {type: "error", translationKey: "workDocumentsDeleteError", fileName: workDocument.name};
+          },
+        }),
+    );
+  }
+
   getFileTypeIcon(name: string): FileTypeIcon {
     const extension = name.split(".").pop()?.toLowerCase() ?? "";
     return FILE_TYPE_ICONS[extension] ?? DEFAULT_FILE_TYPE_ICON;
@@ -172,31 +353,71 @@ export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
   }
 
   private resolveContext(): Observable<WorkDocumentsContext> {
-    return combineLatest([
-      this.documentService.getDocument(this.documentId),
-      this.workdocumentsService.getZaakMetadata(this.documentId),
-      this.pluginManagementService.getPluginConfigurationsByPluginDefinitionKey("sharepoint-plugin"),
-    ]).pipe(
-      switchMap(([document, zaak, configurations]) => {
-        if (configurations.length !== 1) {
+    return this.pluginManagementService.getPluginConfigurationsByPluginDefinitionKey("sharepoint-plugin").pipe(
+      map(configurations => {
+        if (configurations.length !== 1 || !configurations[0].id) {
           throw new Error(
             `Expected exactly one SharePoint plugin configuration, found ${configurations.length}. ` +
               "Cannot determine which one to use for this case.",
           );
         }
-        const pluginConfigurationId = configurations[0].id;
-        const startdatum = zaak?.startdatum ? new Date(zaak.startdatum) : null;
-        if (!pluginConfigurationId || !document?.definitionId.name || !zaak?.identificatie || !startdatum) {
-          throw new Error("Missing SharePoint plugin configuration or zaak properties");
-        }
-        return of({
-          pluginConfigurationId,
-          docDefinition: document.definitionId.name,
-          year: startdatum.getUTCFullYear().toString(),
-          zaaknummer: zaak.identificatie,
-        });
+        return {pluginConfigurationId: configurations[0].id};
       }),
     );
+  }
+
+  private loadUploadSettings(): Observable<UploadSettings> {
+    const caseDefinitionKey = this.route.snapshot.paramMap.get("caseDefinitionKey");
+    return combineLatest([
+      this.documentenApiDocumentService.getPrefilledUploadFields(this.documentId),
+      caseDefinitionKey ? this.documentenApiVersionService.getSupportedApiFeatures(caseDefinitionKey) : of(null),
+    ]).pipe(
+      map(([fields, features]) => this.toUploadSettings(fields, !!features?.supportsTrefwoorden)),
+    );
+  }
+
+  // Same mapping as core's Documenten tab
+  private toUploadSettings(fields: UploadField[], supportsTrefwoorden: boolean): UploadSettings {
+    const defaultValue = (key: string) => fields.find(field => field.key === key)?.defaultValue;
+    return {
+      defaultValues: {
+        auteur: defaultValue("auteur"),
+        vertrouwelijkheidaanduiding: defaultValue("vertrouwelijkheidaanduiding"),
+        beschrijving: defaultValue("beschrijving"),
+        titel: defaultValue("titel"),
+        informatieobjecttype: defaultValue("informatieobjecttype"),
+        bestandsnaam: defaultValue("bestandsnaam"),
+        taal: defaultValue("taal"),
+        status: defaultValue("status"),
+        trefwoorden: defaultValue("trefwoorden")
+          ?.split(",")
+          .map(tag => tag.trim())
+          .filter(tag => !!tag),
+      },
+      hideFields: fields.filter(field => !field.visible).map(field => field.key),
+      readonlyFields: fields.filter(field => field.readonly).map(field => field.key),
+      supportsTrefwoorden,
+    };
+  }
+
+  private storeResultMessage(result: StoreInDocumentenApiResult, fileName: string): TabMessage {
+    if (!result.stored) {
+      return {type: "warning", translationKey: "workDocumentsNotStoredYet", fileName};
+    }
+    if (!result.removedFromSharePoint) {
+      return {type: "warning", translationKey: "workDocumentsStoredNotRemoved", fileName};
+    }
+    return {type: "success", translationKey: "workDocumentsStored", fileName};
+  }
+
+  private toMetadataValues(metadata: DocumentenApiMetadata): Record<string, string> {
+    // Same encoding as core's upload: empty values are left out and lists become comma-separated
+    return Object.entries(metadata).reduce<Record<string, string>>((values, [key, value]) => {
+      if (value !== null && value !== undefined && value !== "") {
+        values[key] = Array.isArray(value) ? value.join(",") : String(value);
+      }
+      return values;
+    }, {});
   }
 
   private loadPage(): void {
@@ -208,9 +429,7 @@ export class WorkdocumentsCaseTabComponent implements OnInit, OnDestroy {
       this.workdocumentsService
         .getWorkDocuments(
           context.pluginConfigurationId,
-          context.docDefinition,
-          context.year,
-          context.zaaknummer,
+          this.documentId,
           PAGE_SIZE,
           this.nextLink,
         )

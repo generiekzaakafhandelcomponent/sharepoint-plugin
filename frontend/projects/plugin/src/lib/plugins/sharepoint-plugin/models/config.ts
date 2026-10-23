@@ -29,6 +29,10 @@ interface CreateZaakFolderConfig {
   sharePointZaakFolderProcessVariable: string;
 }
 
+interface DeleteWorkDocumentConfig {
+  fileName: string;
+}
+
 interface WorkDocument {
   id: string;
   name: string;
@@ -50,6 +54,19 @@ interface ZaakMetadata {
   startdatum: string | null;
 }
 
+interface ZaakDocument {
+  fileId: string;
+  fileName: string | null;
+  title: string | null;
+  pluginConfigurationId: string;
+  canView?: boolean;
+}
+
+interface StoreInDocumentenApiResult {
+  stored: boolean;
+  removedFromSharePoint: boolean;
+}
+
 interface TestConnectionResult {
   success: boolean;
   message: string;
@@ -58,8 +75,11 @@ interface TestConnectionResult {
 export {
   SharePointPluginConfig,
   CreateZaakFolderConfig,
+  DeleteWorkDocumentConfig,
   WorkDocument,
   WorkDocumentPage,
   ZaakMetadata,
+  ZaakDocument,
+  StoreInDocumentenApiResult,
   TestConnectionResult,
 };

@@ -18,7 +18,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {ConfigService} from "@valtimo/shared";
 import {Observable} from "rxjs";
-import {WorkDocumentPage, ZaakMetadata} from "../models";
+import {StoreInDocumentenApiResult, WorkDocument, WorkDocumentPage, ZaakDocument} from "../models";
 
 @Injectable({
   providedIn: "root",
@@ -35,28 +35,50 @@ export class WorkdocumentsService {
 
   getWorkDocuments(
     pluginConfigurationId: string,
-    docDefinition: string,
-    year: string,
-    zaaknummer: string,
+    documentId: string,
     pageSize?: number,
     nextLink?: string,
   ): Observable<WorkDocumentPage> {
-    const params: Record<string, string> = {docDefinition, year, zaaknummer};
+    const params: Record<string, string> = {};
     if (pageSize) {
       params["pageSize"] = pageSize.toString();
     }
     if (nextLink) {
       params["nextLink"] = nextLink;
     }
-    return this.http.get<WorkDocumentPage>(
-      `${this.valtimoEndpointUri}v1/plugin/sharepoint/${pluginConfigurationId}/work-documents`,
-      {params},
+    return this.http.get<WorkDocumentPage>(this.workDocumentsUri(pluginConfigurationId, documentId), {params});
+  }
+
+  getZaakDocuments(documentId: string): Observable<ZaakDocument[]> {
+    return this.http.get<ZaakDocument[]>(`${this.valtimoEndpointUri}v1/zaken-api/document/${documentId}/files`);
+  }
+
+  uploadFromDocumentenApi(
+    pluginConfigurationId: string,
+    documentId: string,
+    zaakDocument: ZaakDocument,
+  ): Observable<WorkDocument> {
+    return this.http.post<WorkDocument>(this.workDocumentsUri(pluginConfigurationId, documentId), {
+      documentenApiPluginConfigurationId: zaakDocument.pluginConfigurationId,
+      documentenApiDocumentId: zaakDocument.fileId,
+    });
+  }
+
+  storeInDocumentenApi(
+    pluginConfigurationId: string,
+    documentId: string,
+    itemId: string,
+    metadata: Record<string, string>,
+  ): Observable<StoreInDocumentenApiResult> {
+    return this.http.post<StoreInDocumentenApiResult>(
+      `${this.workDocumentsUri(pluginConfigurationId, documentId)}/${encodeURIComponent(itemId)}/documenten-api`,
+      {metadata},
     );
   }
 
-  getZaakMetadata(documentId: string): Observable<ZaakMetadata> {
-    return this.http.get<ZaakMetadata>(
-      `${this.valtimoEndpointUri}v1/zaken-api/document/${documentId}/zaak`,
+  deleteWorkDocument(pluginConfigurationId: string, documentId: string, itemId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.workDocumentsUri(pluginConfigurationId, documentId)}/${encodeURIComponent(itemId)}`,
     );
   }
 
@@ -65,5 +87,9 @@ export class WorkdocumentsService {
       `${this.valtimoEndpointUri}v1/plugin/sharepoint/documents/${documentId}/sharepoint-location`,
       {responseType: "text"}
     );
+  }
+
+  private workDocumentsUri(pluginConfigurationId: string, documentId: string): string {
+    return `${this.valtimoEndpointUri}v1/plugin/sharepoint/${pluginConfigurationId}/documents/${documentId}/work-documents`;
   }
 }
