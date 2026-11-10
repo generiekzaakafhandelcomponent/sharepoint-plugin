@@ -169,3 +169,5 @@ frontend/package-lock.json
 .kotlin
 .idea
 migration
+
+.claude/settings.local.json

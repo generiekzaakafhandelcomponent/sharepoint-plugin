@@ -104,4 +104,24 @@ internal class SharePointServiceTest {
             )
         }
     }
+
+    @Test
+    fun `deleteZaakFolder deletes the full zaak folder path`() {
+        sharePointService.deleteZaakFolder(
+            graphClient = graphClient,
+            driveId = "drive-1",
+            dossierDefinitionName = "example",
+            year = "2026",
+            zaaknummer = "ZAAK-001",
+        )
+
+        verify(graphClient).deleteFolder("drive-1", "example/2026/ZAAK-001")
+    }
+
+    @Test
+    fun `deleteZaakFolder rejects path traversal in zaaknummer`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            sharePointService.deleteZaakFolder(graphClient, "drive-1", "example", "2026", "../other")
+        }
+    }
 }

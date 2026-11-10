@@ -20,6 +20,7 @@ import {PluginTranslatePipeModule} from "@valtimo/plugin";
 import {FormModule, InputModule as ValtimoInputModule} from "@valtimo/components";
 import {SharePointPluginConfigurationComponent} from "./components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
 import {CreateZaakFolderConfigurationComponent} from "./components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
+import {DeleteZaakFolderConfigurationComponent} from "./components/delete-zaak-folder-configuration/delete-zaak-folder-configuration.component";
 import {WorkdocumentsCaseTabComponent} from "./components/workdocuments-case-tab/workdocuments-case-tab.component";
 import {CASE_TAB_TOKEN} from "@valtimo/case";
 import {ButtonModule} from "carbon-components-angular";
@@ -28,12 +29,14 @@ import {ButtonModule} from "carbon-components-angular";
   declarations: [
     SharePointPluginConfigurationComponent,
     CreateZaakFolderConfigurationComponent,
+    DeleteZaakFolderConfigurationComponent,
     WorkdocumentsCaseTabComponent,
   ],
   imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule, ButtonModule],
   exports: [
     SharePointPluginConfigurationComponent,
     CreateZaakFolderConfigurationComponent,
+    DeleteZaakFolderConfigurationComponent,
     WorkdocumentsCaseTabComponent,
   ],
   providers: [

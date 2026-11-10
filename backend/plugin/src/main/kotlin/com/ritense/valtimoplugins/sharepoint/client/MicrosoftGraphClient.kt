@@ -161,4 +161,20 @@ class MicrosoftGraphClient(
             }
         }
     }
+
+    /** Deletes the folder and everything in it (Graph moves it to the site recycle bin). */
+    fun deleteFolder(driveId: String, folderPath: String) {
+        try {
+            graphServiceClient
+                .drives().byDriveId(driveId)
+                .items().byDriveItemId("root:/${folderPath.trim('/')}:")
+                .delete()
+        } catch (e: ODataError) {
+            if (e.responseStatusCode == 404) {
+                logger.warn { "SharePoint folder not found at path: $folderPath, nothing to delete" }
+            } else {
+                throw e
+            }
+        }
+    }
 }
