@@ -111,4 +111,31 @@ open class SharePointPlugin(
 
         execution.setVariable(sharePointZaakFolderProcessVariable, location)
     }
+
+    @PluginAction(
+        key = "delete-zaak-folder",
+        title = "Verwijder zaakmap in SharePoint",
+        description = "Verwijdert de zaakmap in SharePoint inclusief alle inhoud.",
+        activityTypes = [SERVICE_TASK_START],
+    )
+    open fun deleteZaakFolder(execution: DelegateExecution) {
+        val documentId = execution.businessKey
+        val zaakNr = zaakValueResolverFactory.createResolver(documentId).apply("identificatie")
+
+        logger.info { "Deleting SharePoint folder for zaak: $zaakNr" }
+
+        val document =
+            processDocumentService.getDocument(
+                OperatonProcessInstanceId(execution.processInstanceId),
+                execution
+            )
+
+        sharePointService.deleteZaakFolder(
+            graphClient = microsoftGraphClient,
+            driveId = driveId,
+            dossierDefinitionName = document.definitionId().name(),
+            year = document.createdOn().year.toString(),
+            zaaknummer = zaakNr as String,
+        )
+    }
 }

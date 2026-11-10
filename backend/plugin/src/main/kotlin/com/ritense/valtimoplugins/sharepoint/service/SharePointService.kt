@@ -120,6 +120,16 @@ class SharePointService {
         return graphClient.createFolder(driveId, parentPath, folderName)?.webUrl ?: ""
     }
 
+    fun deleteZaakFolder(
+        graphClient: MicrosoftGraphClient,
+        driveId: String,
+        dossierDefinitionName: String,
+        year: String,
+        zaaknummer: String,
+    ) {
+        graphClient.deleteFolder(driveId, buildFolderPath(dossierDefinitionName, year, zaaknummer))
+    }
+
     private fun buildFolderPath(vararg parts: String): String =
         parts.filter { it.isNotBlank() }
             .map(::validatePathSegment)

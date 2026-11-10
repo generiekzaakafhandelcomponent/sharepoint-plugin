@@ -18,6 +18,7 @@ import {PluginSpecification} from "@valtimo/plugin";
 import {SharePointPluginConfigurationComponent} from "./components/sharepoint-plugin-configuration/sharepoint-plugin-configuration.component";
 import {SHAREPOINT_PLUGIN_LOGO_BASE64} from "./assets";
 import {CreateZaakFolderConfigurationComponent} from "./components/create-zaak-folder-configuration/create-zaak-folder-configuration.component";
+import {DeleteZaakFolderConfigurationComponent} from "./components/delete-zaak-folder-configuration/delete-zaak-folder-configuration.component";
 
 const sharepointPluginSpecification: PluginSpecification = {
   pluginId: "sharepoint-plugin",
@@ -25,6 +26,7 @@ const sharepointPluginSpecification: PluginSpecification = {
   pluginLogoBase64: SHAREPOINT_PLUGIN_LOGO_BASE64,
   functionConfigurationComponents: {
     "create-zaak-folder": CreateZaakFolderConfigurationComponent,
+    "delete-zaak-folder": DeleteZaakFolderConfigurationComponent,
   },
 
   pluginTranslations: {
@@ -41,6 +43,9 @@ const sharepointPluginSpecification: PluginSpecification = {
       "create-zaak-folder": "Maak zaakmap aan in SharePoint",
       createZaakFolderDescription:
         "Maakt automatisch een map aan in SharePoint voor de werkdocumenten van de zaak.",
+      "delete-zaak-folder": "Verwijder zaakmap in SharePoint",
+      deleteZaakFolderDescription:
+        "Verwijdert de zaakmap in SharePoint inclusief alle inhoud.",
       sharePointZaakFolderProcessVariable: "Process variable met sharepointlocatie",
       workDocumentsNameHeader: "Naam",
       workDocumentsSizeHeader: "Grootte",
@@ -68,6 +73,9 @@ const sharepointPluginSpecification: PluginSpecification = {
       "create-zaak-folder": "Create case folder in SharePoint",
       createZaakFolderDescription:
         "Automatically creates a folder in SharePoint for the case's work documents.",
+      "delete-zaak-folder": "Delete case folder in SharePoint",
+      deleteZaakFolderDescription:
+        "Deletes the case folder in SharePoint including all its contents.",
       sharePointZaakFolderProcessVariable: "Process variable with sharepointlocation",
       workDocumentsNameHeader: "Name",
       workDocumentsSizeHeader: "Size",

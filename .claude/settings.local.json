@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//workspace/**)",
+      "Bash(./gradlew :backend:plugin:compileKotlin)",
+      "Bash(jar tf *)",
+      "Read(//tmp/**)",
+      "Bash(jar xf *)",
+      "Bash(javap -p com/microsoft/graph/sites/item/drives/item/DriveItemRequestBuilder.class)",
+      "Bash(javap -p com/microsoft/graph/drives/item/DriveItemRequestBuilder.class)",
+      "Bash(javap -p com/microsoft/graph/drives/item/root/RootRequestBuilder.class)",
+      "Bash(javap -p com/microsoft/graph/drives/item/items/ItemsRequestBuilder.class)",
+      "Bash(javap -p com/microsoft/graph/drives/item/items/item/DriveItemItemRequestBuilder.class)",
+      "Bash(javap -p com/microsoft/graph/drives/item/items/item/children/ChildrenRequestBuilder.class)"
+    ]
+  }
+}
